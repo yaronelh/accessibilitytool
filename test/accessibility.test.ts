@@ -24,10 +24,83 @@ function createInstance(options: ConstructorParameters<typeof Accessibility>[0] 
 }
 
 describe('Accessibility', () => {
+	it('defaults to emoji icons and does not inject remote font links', () => {
+		document.head.innerHTML = '';
+		document.body.innerHTML = '<div id="fixture"><p>hello world</p></div>';
+		document.documentElement.style.fontSize = '16px';
+		document.body.style.fontSize = '16px';
+
+		const instance = new Accessibility({
+			modules: {
+				speechToText: false,
+				textToSpeech: false
+			},
+			session: {
+				persistent: false
+			}
+		});
+
+		expect(instance.options.icon.useEmojis).toBe(true);
+		expect(document.head.querySelector('link[rel="stylesheet"]')).toBeNull();
+		expect(document.querySelector('._access-icon img')).not.toBeNull();
+	});
+
+	it('only injects remote icon font links when explicitly allowed', () => {
+		document.head.innerHTML = '';
+		document.body.innerHTML = '<div id="fixture"><p>hello world</p></div>';
+		document.documentElement.style.fontSize = '16px';
+		document.body.style.fontSize = '16px';
+
+		new Accessibility({
+			icon: {
+				useEmojis: false,
+				allowRemoteFonts: true,
+				fontClass: 'material-icons',
+				fontFaceSrc: ['https://example.com/icons.css']
+			},
+			modules: {
+				speechToText: false,
+				textToSpeech: false
+			},
+			session: {
+				persistent: false
+			}
+		});
+
+		expect(document.head.querySelector('link[href="https://example.com/icons.css"]')).not.toBeNull();
+	});
+
+	it('falls back to emoji icons when a remote font URL is configured without opt-in', () => {
+		document.head.innerHTML = '';
+		document.body.innerHTML = '<div id="fixture"><p>hello world</p></div>';
+		document.documentElement.style.fontSize = '16px';
+		document.body.style.fontSize = '16px';
+
+		const instance = new Accessibility({
+			icon: {
+				useEmojis: false,
+				fontClass: 'material-icons',
+				fontFaceSrc: ['https://example.com/icons.css']
+			},
+			modules: {
+				speechToText: false,
+				textToSpeech: false
+			},
+			session: {
+				persistent: false
+			}
+		});
+
+		expect(instance.options.icon.useEmojis).toBe(true);
+		expect(document.head.querySelector('link[href="https://example.com/icons.css"]')).toBeNull();
+		expect(document.querySelector('._access-icon img')).not.toBeNull();
+	});
+
 	it('injects the icon, menu, and base stylesheet', () => {
 		createInstance();
 
 		expect(document.querySelector('._access-icon')).not.toBeNull();
+		expect(document.querySelector('._access-menu ._menu-close-btn img')).not.toBeNull();
 		expect(document.querySelector('._access-menu')).not.toBeNull();
 		expect(document.querySelector('._access-main-css')).not.toBeNull();
 	});

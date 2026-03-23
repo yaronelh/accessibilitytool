@@ -268,10 +268,25 @@ const instance = new Accessibility({suppressDomInjection: true});
 ```
 You will need to provide your own DOM and call `menuInterface` functions.
 
-You might need to replace the font-face-src:
+By default the library does not fetch remote icon fonts. The default runtime uses emoji/local icon behavior so it works without reaching out to Google Fonts.
+
+If you already load an icon font yourself from a local or self-hosted stylesheet, you can point the component at that font without enabling remote loading:
 ```javascript
 const options = {
     icon: {
+        useEmojis: false,
+        fontClass: 'material-icons'
+    }
+};
+new Accessibility(options);
+```
+
+If you want the component itself to fetch a remote icon font URL, you must opt in explicitly:
+```javascript
+const options = {
+    icon: {
+        useEmojis: false,
+        allowRemoteFonts: true,
         fontFaceSrc: ['https://fonts.bunny.net/icon?family=Material+Icons']
     }
 };
@@ -282,6 +297,8 @@ Another example with font-awesome icons:
 ```javascript
 const options = {
     icon: {
+        useEmojis: false,
+        allowRemoteFonts: true,
         fontFaceSrc: ['https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/v4-font-face.min.css'],
         fontFamily: '"FontAwesome"',
         img: '[optional - URL for an image that will replace the menu icon]',
@@ -312,6 +329,8 @@ const options = {
 };
 new Accessibility(options);
 ```
+
+If your site uses a strict CSP, keep remote font loading disabled and self-host the stylesheet instead.
 ```css
 :root {
     --_access-menu-item-icon-increase-text: "\f062";

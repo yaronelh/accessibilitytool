@@ -49,9 +49,11 @@
 	"author": "Ran Buchnik <ranbuch@gmail.com>",
 	"license": "MIT",
 	"devDependencies": {
+		"@material-design-icons/svg": "^0.14.15",
+		"@material-symbols/svg-400": "^0.42.3",
+		"@types/node": "25.5.0",
 		"@typescript-eslint/eslint-plugin": "8.57.1",
 		"@typescript-eslint/parser": "8.57.1",
-		"@types/node": "25.5.0",
 		"eslint": "10.1.0",
 		"eslint-config-prettier": "10.1.8",
 		"jsdom": "29.0.1",

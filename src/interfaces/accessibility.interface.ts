@@ -76,6 +76,7 @@ export interface IAccessibilityIconOptions {
 	fontFaceSrc?: Array<string>;
 	fontClass?: string;
 	useEmojis?: boolean;
+	allowRemoteFonts?: boolean;
 	fontFamilyValidation?: string;
 	tabIndex?: number;
 	closeIcon?: string;

@@ -4,6 +4,11 @@ import {
 	IAccessibilityOptions
 } from '../interfaces/accessibility.interface.js';
 import { Common } from '../common.js';
+import {
+	createDefaultCloseIcon,
+	createDefaultLauncherIcon,
+	createDefaultResetIcon
+} from './icon-assets.js';
 
 export function addDefaultIconOptions(
 	targetOptions: IAccessibilityOptions,
@@ -14,24 +19,15 @@ export function addDefaultIconOptions(
 	if (userOptions.icon?.imgElem) targetOptions.icon.imgElem = userOptions.icon.imgElem;
 
 	if (!targetOptions.icon.closeIconElem) {
-		targetOptions.icon.closeIconElem = {
-			type: '#text',
-			text: `${!targetOptions.icon.useEmojis ? targetOptions.icon.closeIcon : 'X'}`
-		};
+		targetOptions.icon.closeIconElem = createDefaultCloseIcon();
 	}
 
 	if (!targetOptions.icon.resetIconElem) {
-		targetOptions.icon.resetIconElem = {
-			type: '#text',
-			text: `${!targetOptions.icon.useEmojis ? targetOptions.icon.resetIcon : '♲'}`
-		};
+		targetOptions.icon.resetIconElem = createDefaultResetIcon();
 	}
 
 	if (!targetOptions.icon.imgElem) {
-		targetOptions.icon.imgElem = {
-			type: '#text',
-			text: targetOptions.icon.img
-		};
+		targetOptions.icon.imgElem = createDefaultLauncherIcon();
 	}
 }
 

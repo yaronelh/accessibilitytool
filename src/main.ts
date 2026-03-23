@@ -9,6 +9,7 @@ import {
 	disableUnsupportedFeatures,
 	ensureModuleOrder
 } from './core/options.js';
+import { buildBuiltinActionIconCss } from './core/icon-assets.js';
 import { escapeCssString } from './core/security.js';
 import { restoreSessionState, saveSessionState } from './core/session.js';
 import {
@@ -76,8 +77,10 @@ export class Accessibility implements IAccessibility {
 			bigCursor: false,
 			readingGuide: false
 		};
-		if (this.options.icon.useEmojis) {
+		if (this.shouldUseEmojiIcons()) {
 			this.fontFallback();
+			this.build();
+		} else if ((this.options.icon.fontFaceSrc || []).length === 0) {
 			this.build();
 		} else {
 			this._common.injectIconsFont(this.options.icon.fontFaceSrc, (hasError: boolean) => {
@@ -110,6 +113,29 @@ export class Accessibility implements IAccessibility {
 				}
 			});
 		}
+	}
+
+	private hasRemoteFontSources() {
+		return (this.options.icon.fontFaceSrc || []).some((src) => /^https?:\/\//i.test(src));
+	}
+
+	private shouldUseEmojiIcons() {
+		if (this.options.icon.useEmojis) return true;
+
+		const hasRemoteFontSources = this.hasRemoteFontSources();
+		if (hasRemoteFontSources && !this.options.icon.allowRemoteFonts) {
+			this._common.warn(
+				'remote icon font loading is disabled by default; set icon.allowRemoteFonts to true to opt in'
+			);
+			return true;
+		}
+
+		const hasFontSources = (this.options.icon.fontFaceSrc || []).length > 0;
+		const hasLocalFontClass = typeof this.options.icon.fontClass === 'string' && this.options.icon.fontClass !== '';
+
+		if (!hasFontSources && !hasLocalFontClass) return true;
+
+		return false;
 	}
 
 	get stateValues() {
@@ -160,10 +186,11 @@ export class Accessibility implements IAccessibility {
 	private get defaultOptions(): IAccessibilityOptions {
 		const res = {
 			icon: {
-				img: 'accessibility',
-				fontFaceSrc: ['https://fonts.googleapis.com/icon?family=Material+Icons'],
-				fontClass: 'material-icons',
-				useEmojis: false,
+				img: '♿',
+				fontFaceSrc: [] as string[],
+				fontClass: '',
+				useEmojis: true,
+				allowRemoteFonts: false,
 				closeIcon: 'close',
 				resetIcon: 'refresh'
 			},
@@ -265,9 +292,39 @@ export class Accessibility implements IAccessibility {
 	}
 
 	fontFallback() {
+		const previousImg = this.options.icon.img;
+		const previousCloseIcon = this.options.icon.closeIcon;
+		const previousResetIcon = this.options.icon.resetIcon;
 		this.options.icon.useEmojis = true;
 		this.options.icon.img = '♿';
 		this.options.icon.fontClass = '';
+		if (
+			this.options.icon.imgElem?.type === '#text' &&
+			(this.options.icon.imgElem.text === previousImg || this.options.icon.imgElem.text === 'accessibility')
+		) {
+			this.options.icon.imgElem = {
+				type: '#text',
+				text: '♿'
+			};
+		}
+		if (
+			this.options.icon.closeIconElem?.type === '#text' &&
+			(this.options.icon.closeIconElem.text === previousCloseIcon || this.options.icon.closeIconElem.text === 'close')
+		) {
+			this.options.icon.closeIconElem = {
+				type: '#text',
+				text: 'X'
+			};
+		}
+		if (
+			this.options.icon.resetIconElem?.type === '#text' &&
+			(this.options.icon.resetIconElem.text === previousResetIcon || this.options.icon.resetIconElem.text === 'refresh')
+		) {
+			this.options.icon.resetIconElem = {
+				type: '#text',
+				text: '♲'
+			};
+		}
 	}
 
 	addDefaultOptions(options: IAccessibilityOptions) {
@@ -283,8 +340,6 @@ export class Accessibility implements IAccessibility {
 	}
 
 	public injectCss(injectFull: boolean) {
-		const iconTop = '7px',
-			iconLeft = '5px';
 		let css;
 		const mandatory = `
         html._access_cursor * {
@@ -361,18 +416,17 @@ export class Accessibility implements IAccessibility {
             }
             ._access-icon {
                 position: var(--_access-icon-position, fixed);
-                width: var(--_access-icon-width, 56px);
-                height: var(--_access-icon-height, 56px);
-                bottom: var(--_access-icon-bottom, 24px);
+                width: var(--_access-icon-width, 58px);
+                height: var(--_access-icon-height, 58px);
+                bottom: var(--_access-icon-bottom, 18px);
                 top: var(--_access-icon-top, unset);
                 left: var(--_access-icon-left, unset);
-                right: var(--_access-icon-right, 16px);
+                right: var(--_access-icon-right, 18px);
                 z-index: var(--_access-icon-z-index, 9999);
-                font: var(--_access-icon-font, 40px / 45px "Material Icons");
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                background: var(--_access-icon-bg, linear-gradient(135deg, #0f766e 0%, #0f172a 100%));
+                background: var(--_access-icon-bg, transparent);
                 color: var(--_access-icon-color, #fff);
                 background-repeat: no-repeat;
                 background-size: contain;
@@ -383,20 +437,25 @@ export class Accessibility implements IAccessibility {
                 -webkit-user-select: none;
                 -ms-user-select: none;
                 user-select: none;
-                box-shadow: var(--_access-icon-box-shadow, 0 14px 28px rgba(15, 23, 42, 0.24));
+                box-shadow: var(--_access-icon-box-shadow, none);
                 transform: ${!this.options.icon.useEmojis ? 'translateY(0)' : 'translateY(0)'};
-                border-radius: var(--_access-icon-border-radius, 18px);
-                border: var(--_access-icon-border, 1px solid rgba(255,255,255,0.18));
+                border-radius: var(--_access-icon-border-radius, 0);
+                border: var(--_access-icon-border, none);
                 text-align: var(--_access-icon-text-align, center);
-                backdrop-filter: blur(10px);
+                backdrop-filter: none;
+            }
+            ._access-icon img {
+                width: 58px;
+                height: 58px;
+                display: block;
             }
             ._access-icon:hover {
-                transform: var(--_access-icon-transform-hover, translateY(-2px) scale(1.04));
+                transform: var(--_access-icon-transform-hover, translateY(-1px) scale(1.02));
                 vertical-align: var(--_access-icon-vertical-align-hover);
             }
             ._access-icon:focus-visible {
                 outline: none;
-                box-shadow: var(--_access-icon-focus-shadow, 0 0 0 4px rgba(15, 118, 110, 0.28), 0 18px 34px rgba(15, 23, 42, 0.22));
+                box-shadow: var(--_access-icon-focus-shadow, 0 0 0 4px rgba(91, 147, 255, 0.28));
             }
             ._access-menu {
                 -moz-user-select: none;
@@ -406,7 +465,7 @@ export class Accessibility implements IAccessibility {
                 position: fixed;
                 width: var(--_access-menu-width, ${Accessibility.MENU_WIDTH});
                 height: var(--_access-menu-height, auto);
-                max-width: var(--_access-menu-max-width, min(24rem, calc(100vw - 1.5rem)));
+                max-width: var(--_access-menu-max-width, min(20rem, calc(100vw - 1rem)));
                 transition-duration: var(--_access-menu-transition-duration, .35s);
                 transition-property: opacity, transform;
                 z-index: var(--_access-menu-z-index, 99991);
@@ -414,19 +473,19 @@ export class Accessibility implements IAccessibility {
                 transform: translateY(0);
                 background: var(--_access-menu-background-color, linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(248,250,252,0.98) 100%));
                 color: var(--_access-menu-color, #0f172a);
-                border-radius: var(--_access-menu-border-radius, 22px);
+                border-radius: var(--_access-menu-border-radius, 18px);
                 border: var(--_access-menu-border, 1px solid rgba(148,163,184,0.28));
                 font-family: var(--_access-menu-font-family, "Segoe UI", "Helvetica Neue", Arial, sans-serif);
-                min-width: var(--_access-menu-min-width, 300px);
-                box-shadow: var(--_access-menu-box-shadow, 0 24px 80px rgba(15, 23, 42, 0.24));
-                max-height: calc(100vh - 32px);
+                min-width: var(--_access-menu-min-width, 280px);
+                box-shadow: var(--_access-menu-box-shadow, 0 20px 60px rgba(15, 23, 42, 0.18));
+                max-height: calc(100vh - 24px);
                 overflow: hidden;
                 backdrop-filter: blur(14px);
                 ${getComputedStyle(this._body).direction === 'rtl' ? 'text-indent: -5px' : ''}
                 top: var(--_access-menu-top, unset);
                 left: var(--_access-menu-left, unset);
-                bottom: var(--_access-menu-bottom, 16px);
-                right: var(--_access-menu-right, 16px);
+                bottom: var(--_access-menu-bottom, 12px);
+                right: var(--_access-menu-right, 12px);
             }
             ._access-menu.close {
                 z-index: -1;
@@ -438,10 +497,10 @@ export class Accessibility implements IAccessibility {
                 right: calc(-1 * var(--_access-menu-width, ${Accessibility.MENU_WIDTH}));
             }
             ._access-menu ._text-center {
-                font-size: var(--_access-menu-header-font-size, 1.2rem);
+                font-size: var(--_access-menu-header-font-size, 1.05rem);
                 font-weight: var(--_access-menu-header-font-weight, 700);
                 margin: var(--_access-menu-header-margin, 0);
-                padding: 1rem 1rem 0.75rem;
+                padding: 0.7rem 0.85rem 0.6rem;
                 color: var(--_access-menu-header-color, #0f172a);
                 letter-spacing: var(--_access-menu-header-letter-spacing, initial);
                 word-spacing: var(--_access-menu-header-word-spacing, initial);
@@ -453,7 +512,7 @@ export class Accessibility implements IAccessibility {
                 border-bottom: 1px solid rgba(148,163,184,0.18);
             }
             ._access-menu ._menu-close-btn {
-                left: 12px;
+                left: 8px;
                 color: var(--_access-menu-close-btn-color, #b91c1c);
                 transition: .3s ease;
                 transform: rotate(0deg);
@@ -463,7 +522,7 @@ export class Accessibility implements IAccessibility {
                 transform: var(--_access-menu-header-btn-hover-rotate, scale(1.08));
             }
             ._access-menu ._menu-reset-btn {
-                right: 12px;
+                right: 8px;
                 color: var(--_access-menu-reset-btn-color, #0f766e);
                 transition: .3s ease;
                 transform: rotate(0deg);
@@ -471,28 +530,33 @@ export class Accessibility implements IAccessibility {
             }
             ._access-menu ._menu-btn {
                 position: absolute;
-                top: 10px;
+                top: 7px;
                 cursor: pointer;
-                font-size: 24px !important;
-                font-weight: bold;
                 background: rgba(255,255,255,0.72);
                 border: 1px solid rgba(148,163,184,0.24);
                 border-radius: 999px;
-                width: 34px;
-                height: 34px;
-                line-height: 34px;
+                width: 28px;
+                height: 28px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
                 padding: 0;
             }
+            ._access-menu ._menu-btn img {
+                width: 14px;
+                height: 14px;
+                display: block;
+            }
             ._access-menu ul {
-                padding: 0.75rem;
+                padding: 0.55rem;
                 position: relative;
-                font-size: var(--_access-menu-font-size, 18px);
+                font-size: var(--_access-menu-font-size, 15px);
                 margin: 0;
                 overflow: auto;
-                max-height: var(--_access-menu-max-height, calc(100vh - 104px));
+                max-height: var(--_access-menu-max-height, calc(100vh - 72px));
                 display: flex;
                 flex-flow: column;
-                gap: 0.6rem;
+                gap: 0.45rem;
                 overscroll-behavior: contain;
             }
             ${mandatory}
@@ -505,8 +569,8 @@ export class Accessibility implements IAccessibility {
                 user-select: none;
                 margin: 0;
                 font: { size: 18, units: 'px' }
-                font-size: var(--_access-menu-item-font-size, 16px) !important;
-                line-height: var(--_access-menu-item-line-height, 20px) !important;
+                font-size: var(--_access-menu-item-font-size, 14px) !important;
+                line-height: var(--_access-menu-item-line-height, 18px) !important;
                 color: var(--_access-menu-item-color, rgba(15,23,42,.82));
                 letter-spacing: var(--_access-menu-item-letter-spacing, initial);
                 word-spacing: var(--_access-menu-item-word-spacing, initial);
@@ -514,18 +578,18 @@ export class Accessibility implements IAccessibility {
             }
             ._access-menu ul li button {
                 background: var(--_access-menu-item-button-background, rgba(255,255,255,0.78));
-                padding: var(--_access-menu-item-button-padding, 0.95rem 0.95rem 0.95rem 0);
+                padding: var(--_access-menu-item-button-padding, 0.72rem 0.8rem 0.72rem 0);
                 width: 100%;
-                min-height: 54px;
-                text-indent: var(--_access-menu-item-button-text-indent, 44px);
+                min-height: 42px;
+                text-indent: var(--_access-menu-item-button-text-indent, 34px);
                 text-align: start;
                 position: relative;
                 transition-duration: var(--_access-menu-item-button-transition-duration, .35s);
                 transition-timing-function: var(--_access-menu-item-button-transition-timing-function, ease-in-out);
                 border: var(--_access-menu-item-button-border, 1px solid rgba(148,163,184,0.2));
-                border-radius: var(--_access-menu-item-button-border-radius, 16px);
+                border-radius: var(--_access-menu-item-button-border-radius, 14px);
                 cursor: pointer;
-                box-shadow: var(--_access-menu-item-button-box-shadow, 0 10px 25px rgba(15, 23, 42, 0.06));
+                box-shadow: var(--_access-menu-item-button-box-shadow, 0 6px 16px rgba(15, 23, 42, 0.05));
             }
             ._access-menu ul li.position {
                 display: inline-block;
@@ -559,18 +623,12 @@ export class Accessibility implements IAccessibility {
             }
             ._access-menu ul li button:before {
                 content: ' ';
-                font-family: var(--_access-menu-button-font-family-before, ${this._fixedDefaultFont});
-                text-rendering: optimizeLegibility;
-                font-feature-settings: "liga" 1;
-                font-style: normal;
-                text-transform: none;
-                line-height: ${!this.options.icon.useEmojis ? '1' : '1.1'};
-                font-size: ${!this.options.icon.useEmojis ? '24px' : '20px'} !important;
-                width: 30px;
-                height: 30px;
+                line-height: 1;
+                font-size: 16px !important;
+                width: 18px;
+                height: 18px;
                 display: inline-block;
                 overflow: hidden;
-                -webkit-font-smoothing: antialiased;
                 top: 12px;
                 left: 10px;
                 position: absolute;
@@ -597,103 +655,7 @@ export class Accessibility implements IAccessibility {
             ._access-menu ul li button.active button:before {
                 color: var(--_access-menu-item-active-icon-color, #fff);
             }
-            ._access-menu ul li button[data-access-action="increaseText"]:before {
-                content: var(--_access-menu-item-icon-increase-text, ${!this.options.icon.useEmojis ? '"zoom_in"' : '"🔼"'});
-                transform: var(--_access-menu-item-icon-increase-text-transform, unset);
-                top: var(--_access-menu-item-icon-increase-text-top, ${iconTop});
-                left: var(--_access-menu-item-icon-increase-text-left, ${iconLeft});
-            }
-            ._access-menu ul li button[data-access-action="decreaseText"]:before {
-                content: var(--_access-menu-item-icon-decrease-text, ${!this.options.icon.useEmojis ? '"zoom_out"' : '"🔽"'});
-                transform: var(--_access-menu-item-icon-decrease-text-spacing-transform, unset);
-                top: var(--_access-menu-item-icon-decrease-text-spacing-top, ${iconTop});
-                left: var(--_access-menu-item-icon-decrease-text-spacing-left, ${iconLeft});
-            }
-            ._access-menu ul li button[data-access-action="increaseTextSpacing"]:before {
-                content: var(--_access-menu-item-icon-increase-text-spacing, ${!this.options.icon.useEmojis ? '"unfold_more"' : '"🔼"'});
-                transform: var(--_access-menu-item-icon-increase-text-spacing-transform, rotate(90deg) translate(-7px, 2px));
-                top: var(--_access-menu-item-icon-increase-text-spacing-top, 14px);
-                left: var(--_access-menu-item-icon-increase-text-spacing-left, 0);
-            }
-            ._access-menu ul li button[data-access-action="decreaseTextSpacing"]:before {
-                content: var(--_access-menu-item-icon-decrease-text-spacing, ${!this.options.icon.useEmojis ? '"unfold_less"' : '"🔽"'});
-                transform: var(--_access-menu-item-icon-decrease-text-spacing-transform, rotate(90deg) translate(-7px, 2px));
-                top: var(--_access-menu-item-icon-decrease-text-spacing-top, 14px);
-                left: var(--_access-menu-item-icon-decrease-text-spacing-left, 0);
-            }
-            ._access-menu ul li button[data-access-action="invertColors"]:before {
-                content: var(--_access-menu-item-icon-invert-colors, ${!this.options.icon.useEmojis ? '"invert_colors"' : '"🎆"'});
-                transform: var(--_access-menu-item-icon-invert-colors-transform, unset);
-                top: var(--_access-menu-item-icon-invert-colors-top, ${iconTop});
-                left: var(--_access-menu-item-icon-invert-colors-left, ${iconLeft});
-            }
-            ._access-menu ul li button[data-access-action="grayHues"]:before {
-                content: var(--_access-menu-item-icon-gray-hues, ${!this.options.icon.useEmojis ? '"format_color_reset"' : '"🌫️"'});
-                transform: var(--_access-menu-item-icon-gray-hues-transform, unset);
-                top: var(--_access-menu-item-icon-gray-hues-top, ${iconTop});
-                left: var(--_access-menu-item-icon-gray-hues-left, ${iconLeft});
-            }
-            ._access-menu ul li button[data-access-action="underlineLinks"]:before {
-                content: var(--_access-menu-item-icon-underline-links, ${!this.options.icon.useEmojis ? '"format_underlined"' : '"🔗"'});
-                transform: var(--_access-menu-item-icon-underline-links-transform, unset);
-                top: var(--_access-menu-item-icon-underline-links-top, ${iconTop});
-                left: var(--_access-menu-item-icon-underline-links-left, ${iconLeft});
-            }
-            ._access-menu ul li button[data-access-action="bigCursor"]:before {
-                /*content: 'touch_app';*/
-                content: var(--_access-menu-item-icon-big-cursor, inherit);
-                transform: var(--_access-menu-item-icon-big-cursor-transform, unset);
-                top: var(--_access-menu-item-icon-big-cursor-top, ${iconTop});
-                left: var(--_access-menu-item-icon-big-cursor-left, ${iconLeft});
-            }
-            ._access-menu ul li button[data-access-action="readingGuide"]:before {
-                content: var(--_access-menu-item-icon-reading-guide, ${!this.options.icon.useEmojis ? '"border_horizontal"' : '"↔️"'});
-                transform: var(--_access-menu-item-icon-reading-guide-transform, unset);
-                top: var(--_access-menu-item-icon-reading-guide-top, ${iconTop});
-                left: var(--_access-menu-item-icon-reading-guide-left, ${iconLeft});
-            }
-            ._access-menu ul li button[data-access-action="textToSpeech"]:before {
-                content: var(--_access-menu-item-icon-text-to-speech, ${!this.options.icon.useEmojis ? '"record_voice_over"' : '"⏺️"'});
-                transform: var(--_access-menu-item-icon-text-to-speech-transform, unset);
-                top: var(--_access-menu-item-icon-text-to-speech-top, ${iconTop});
-                left: var(--_access-menu-item-icon-text-to-speech-left, ${iconLeft});
-            }
-            ._access-menu ul li button[data-access-action="speechToText"]:before {
-                content: var(--_access-menu-item-icon-speech-to-text, ${!this.options.icon.useEmojis ? '"mic"' : '"🎤"'});
-                transform: var(--_access-menu-item-icon-speech-to-text-transform, unset);
-                top: var(--_access-menu-item-icon-speech-to-text-top, ${iconTop});
-                left: var(--_access-menu-item-icon-speech-to-text-left, ${iconLeft});
-            }
-            ._access-menu ul li button[data-access-action="disableAnimations"]:before {
-                content: var(--_access-menu-item-icon-disable-animations, ${!this.options.icon.useEmojis ? '"animation"' : '"🏃‍♂️"'});
-                transform: var(--_access-menu-item-icon-disable-animations-transform, unset);
-                top: var(--_access-menu-item-icon-disable-animations-top, ${iconTop});
-                left: var(--_access-menu-item-icon-disable-animations-left, ${iconLeft});
-            }
-            ._access-menu ul li button[data-access-action="iframeModals"]:before {
-                content: var(--_access-menu-item-icon-iframe-modals, ${!this.options.icon.useEmojis ? '"policy"' : '"⚖️"'});
-                transform: var(--_access-menu-item-icon-iframe-transform, unset);
-                top: var(--_access-menu-item-icon-iframe-top, ${iconTop});
-                left: var(--_access-menu-item-icon-iframe-left, ${iconLeft});
-            }
-            ._access-menu ul li button[data-access-action="customFunctions"]:before {
-                content: var(--_access-menu-item-icon-custom-functions, ${!this.options.icon.useEmojis ? '"psychology_alt"' : '"❓"'});
-                transform: var(--_access-menu-item-icon-custom-functions-transform, unset);
-                top: var(--_access-menu-item-icon-custom-functions-top, ${iconTop});
-                left: var(--_access-menu-item-icon-custom-functions-left, ${iconLeft});
-            }
-            ._access-menu ul li button[data-access-action="increaseLineHeight"]:before {
-                content: var(--_access-menu-item-icon-increase-line-height, ${!this.options.icon.useEmojis ? '"unfold_more"' : '"🔼"'});
-                transform: var(--_access-menu-item-icon-increase-line-height-transform, unset);
-                top: var(--_access-menu-item-icon-increase-line-height-top, ${iconTop});
-                left: var(--_access-menu-item-icon-increase-line-height-left, ${iconLeft});
-            }
-            ._access-menu ul li button[data-access-action="decreaseLineHeight"]:before {
-                content: var(--_access-menu-item-icon-decrease-line-height, ${!this.options.icon.useEmojis ? '"unfold_less"' : '"🔽"'});
-                transform: var(--_access-menu-item-icon-decrease-line-height-transform, unset);
-                top: var(--_access-menu-item-icon-decrease-line-height-top, ${iconTop});
-                left: var(--_access-menu-item-icon-decrease-line-height-left, ${iconLeft});
-            }
+            ${buildBuiltinActionIconCss()}
             @media (max-width: 768px) {
                 ._access-icon {
                     right: var(--_access-icon-right-mobile, 12px);
@@ -1017,12 +979,6 @@ export class Accessibility implements IAccessibility {
 									},
 									children: [
 										{
-											type: 'div',
-											attrs: {
-												id: 'iconBigCursor'
-											}
-										},
-										{
 											type: '#text',
 											text: this.options.labels.bigCursor
 										}
@@ -1147,15 +1103,6 @@ export class Accessibility implements IAccessibility {
 		let menuElem = this._common.jsonToHtml(json);
 
 		this._body.appendChild(menuElem);
-		setTimeout(function () {
-			let ic = document.getElementById('iconBigCursor');
-			if (ic) {
-				ic.outerHTML =
-					ic.outerHTML +
-					'<svg version="1.1" id="iconBigCursorSvg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="position: absolute;width: 19px;height: 19px;top: 9px; left: 9px;" xml:space="preserve"><path d="M 423.547 323.115 l -320 -320 c -3.051 -3.051 -7.637 -3.947 -11.627 -2.304 s -6.592 5.547 -6.592 9.856 V 480 c 0 4.501 2.837 8.533 7.083 10.048 c 4.224 1.536 8.981 0.192 11.84 -3.285 l 85.205 -104.128 l 56.853 123.179 c 1.792 3.883 5.653 6.187 9.685 6.187 c 1.408 0 2.837 -0.277 4.203 -0.875 l 74.667 -32 c 2.645 -1.131 4.736 -3.285 5.76 -5.973 c 1.024 -2.688 0.939 -5.675 -0.277 -8.299 l -57.024 -123.52 h 132.672 c 4.309 0 8.213 -2.603 9.856 -6.592 C 427.515 330.752 426.598 326.187 423.547 323.115 Z"/></svg>';
-				document.getElementById('iconBigCursor').remove();
-			}
-		}, 1);
 		this._common.deployedObjects.set('._access-menu', false);
 
 		let closeBtn = document.querySelector('._access-menu ._menu-close-btn');
