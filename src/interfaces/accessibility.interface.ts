@@ -17,7 +17,7 @@ export interface IAccessibility {
 	alterLineHeight(isIncrease: boolean): void;
 	speechToText(): void;
 	textToSpeech(text: string): void;
-	listen(): void;
+	listen(e?: Event): void;
 	read(e?: Event): void;
 	runHotkey(name: string): void;
 	toggleMenu(): void;

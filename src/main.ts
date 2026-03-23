@@ -1,6 +1,15 @@
 'use strict';
 
 import { Common } from './common.js';
+import { getEventTarget, isActivationEvent } from './core/event-utils.js';
+import { findMatchingHotkey, parseHotkeyLabel } from './core/hotkeys.js';
+import {
+	addDefaultIconOptions,
+	buildDefaultModuleOrder,
+	disableUnsupportedFeatures,
+	ensureModuleOrder
+} from './core/options.js';
+import { restoreSessionState, saveSessionState } from './core/session.js';
 import {
 	IAccessibility,
 	IAccessibilityOptions,
@@ -219,9 +228,9 @@ export class Accessibility implements IAccessibility {
 				speechToText: true,
 				disableAnimations: true,
 				iframeModals: true,
-				customFunctions: true
+			customFunctions: true
 			},
-			modulesOrder: [] as Array<IAccessibilityModuleOrder>,
+			modulesOrder: buildDefaultModuleOrder(),
 			session: {
 				persistent: true
 			},
@@ -238,16 +247,6 @@ export class Accessibility implements IAccessibility {
 				speechToTextLang: ''
 			}
 		};
-		const keys = Object.keys(AccessibilityModulesType);
-		keys.forEach((key, index) => {
-			const keyNum = parseInt(key);
-			if (!isNaN(keyNum)) {
-				res.modulesOrder.push({
-					type: keyNum,
-					order: keyNum
-				});
-			}
-		});
 		return res;
 	}
 
@@ -269,45 +268,15 @@ export class Accessibility implements IAccessibility {
 	}
 
 	addDefaultOptions(options: IAccessibilityOptions) {
-		if (options.icon?.closeIconElem) this.options.icon.closeIconElem = options.icon.closeIconElem;
-		if (options.icon?.resetIconElem) this.options.icon.resetIconElem = options.icon.resetIconElem;
-		if (options.icon?.imgElem) this.options.icon.imgElem = options.icon.imgElem;
-		if (!this.options.icon.closeIconElem)
-			this.options.icon.closeIconElem = {
-				type: '#text',
-				text: `${!this.options.icon.useEmojis ? this.options.icon.closeIcon : 'X'}`
-			};
-		if (!this.options.icon.resetIconElem)
-			this.options.icon.resetIconElem = {
-				type: '#text',
-				text: `${!this.options.icon.useEmojis ? this.options.icon.resetIcon : '♲'}`
-			};
-		if (!this.options.icon.imgElem)
-			this.options.icon.imgElem = {
-				type: '#text',
-				text: this.options.icon.img
-			};
+		addDefaultIconOptions(this.options, options);
 	}
 
 	addModuleOrderIfNotDefined() {
-		this.defaultOptions.modulesOrder.forEach((mo) => {
-			if (!this.options.modulesOrder.find((imo) => imo.type === mo.type))
-				this.options.modulesOrder.push(mo);
-		});
+		ensureModuleOrder(this.defaultOptions.modulesOrder, this.options.modulesOrder);
 	}
 
 	disabledUnsupportedFeatures() {
-		if (!('webkitSpeechRecognition' in window) || location.protocol !== 'https:') {
-			this._common.warn(
-				"speech to text isn't supported in this browser or in http protocol (https required)"
-			);
-			this.options.modules.speechToText = false;
-		}
-		const windowAny = window as any;
-		if (!windowAny.SpeechSynthesisUtterance || !windowAny.speechSynthesis) {
-			this._common.warn("text to speech isn't supported in this browser");
-			this.options.modules.textToSpeech = false;
-		}
+		disableUnsupportedFeatures(this._common, this.options);
 	}
 
 	public injectCss(injectFull: boolean) {
@@ -738,18 +707,7 @@ export class Accessibility implements IAccessibility {
 	}
 
 	parseKeys(arr: Array<any>) {
-		return this.options.hotkeys.enabled
-			? this.options.hotkeys.helpTitles
-				? this.options.labels.hotkeyPrefix +
-					arr
-						.map(function (val) {
-							return Number.isInteger(val)
-								? String.fromCharCode(val).toLowerCase()
-								: val.replace('Key', '');
-						})
-						.join('+')
-				: ''
-			: '';
+		return parseHotkeyLabel(this.options.hotkeys, this.options.labels.hotkeyPrefix, arr);
 	}
 
 	injectMenu(): HTMLElement {
@@ -1107,28 +1065,26 @@ export class Accessibility implements IAccessibility {
 		this._common.deployedObjects.set('._access-menu', false);
 
 		let closeBtn = document.querySelector('._access-menu ._menu-close-btn');
-		['click', 'keyup'].forEach((evt) => {
-			closeBtn.addEventListener(
-				evt,
-				(e: Event | KeyboardEvent) => {
-					let et = e || window.event;
-					if ((et as KeyboardEvent).detail === 0 && (et as KeyboardEvent).key !== 'Enter') return;
-					this.toggleMenu();
-				},
-				false
+			['click', 'keyup'].forEach((evt) => {
+				closeBtn.addEventListener(
+					evt,
+					(e: Event | KeyboardEvent) => {
+						if (!isActivationEvent(e)) return;
+						this.toggleMenu();
+					},
+					false
 			);
 		});
 
 		let resetBtn = document.querySelector('._access-menu ._menu-reset-btn');
-		['click', 'keyup'].forEach((evt) => {
-			resetBtn.addEventListener(
-				evt,
-				(e: Event | KeyboardEvent) => {
-					let et = e || window.event;
-					if ((et as KeyboardEvent).detail === 0 && (et as KeyboardEvent).key !== 'Enter') return;
-					this.resetAll();
-				},
-				false
+			['click', 'keyup'].forEach((evt) => {
+				resetBtn.addEventListener(
+					evt,
+					(e: Event | KeyboardEvent) => {
+						if (!isActivationEvent(e)) return;
+						this.resetAll();
+					},
+					false
 			);
 		});
 
@@ -1241,11 +1197,12 @@ export class Accessibility implements IAccessibility {
 		for (let i = 0; i < lis.length; i++) {
 			['click', 'keyup'].forEach((evt) =>
 				lis[i].addEventListener(evt, (e: Event | KeyboardEvent) => {
-					let evt = e || window.event;
-					if ((evt as KeyboardEvent).detail === 0 && (evt as KeyboardEvent).key !== 'Enter') return;
+					if (!isActivationEvent(e)) return;
+					const target = (getEventTarget(e)?.closest('[data-access-action]') as HTMLElement | null) ?? null;
+					if (!target) return;
 					this.invoke(
-						(evt.target as HTMLElement).getAttribute('data-access-action'),
-						evt.target as HTMLElement
+						target.getAttribute('data-access-action'),
+						target
 					);
 				})
 			);
@@ -1255,12 +1212,11 @@ export class Accessibility implements IAccessibility {
 			el.addEventListener(
 				'click',
 				(e: Event) => {
-					let evt = e || window.event;
+					const target = getEventTarget(e);
+					if (!target || !target.parentElement || !target.parentElement.parentElement) return;
 					this.invoke(
-						(evt.target as HTMLElement).parentElement.parentElement.getAttribute(
-							'data-access-action'
-						),
-						evt.target as HTMLElement
+						target.parentElement.parentElement.getAttribute('data-access-action'),
+						target
 					);
 				},
 				false
@@ -1618,35 +1574,39 @@ export class Accessibility implements IAccessibility {
 		});
 	}
 
-	listen() {
+	listen(e?: Event) {
 		if (typeof this._recognition === 'object' && typeof this._recognition.stop === 'function')
 			this._recognition.stop();
 
-		this._speechToTextTarget = window.event.target as HTMLElement;
+		const target = getEventTarget<HTMLElement>(e);
+		if (!target) return;
+		this._speechToTextTarget = target;
 		this.speechToText();
 	}
 
-	read(e: Event) {
+	read(e?: Event) {
+		if (!e) return;
+
 		try {
-			e = window.event || e || arguments[0];
-			if (e && e.preventDefault) {
-				e.preventDefault();
-				e.stopPropagation();
-			}
+			e.preventDefault();
+			e.stopPropagation();
 		} catch (ex) {}
+
+		const target = getEventTarget<HTMLElement>(e);
+		if (!target) return;
 
 		let allContent = Array.prototype.slice.call(document.querySelectorAll('._access-menu *'));
 		for (const key in allContent) {
-			if (allContent[key] === window.event.target && e instanceof MouseEvent) return;
+			if (allContent[key] === target && e instanceof MouseEvent) return;
 		}
 		if (e instanceof KeyboardEvent && ((e.shiftKey && e.key === 'Tab') || e.key === 'Tab')) {
-			this.textToSpeech((window.event.target as HTMLElement).innerText);
+			this.textToSpeech(target.innerText);
 			return;
 		}
 		if (this._isReading) {
 			window.speechSynthesis.cancel();
 			this._isReading = false;
-		} else this.textToSpeech((window.event.target as HTMLElement).innerText);
+		} else this.textToSpeech(target.innerText);
 	}
 
 	runHotkey(name: string) {
@@ -1689,21 +1649,7 @@ export class Accessibility implements IAccessibility {
 	}
 
 	onKeyDown(e: KeyboardEvent) {
-		let act = Object.entries(this.options.hotkeys.keys).find(function (val) {
-			let pass = true;
-			for (var i = 0; i < val[1].length; i++) {
-				if (Number.isInteger(val[1][i])) {
-					if (e.keyCode !== val[1][i]) {
-						pass = false;
-					}
-				} else {
-					if ((e as any)[val[1][i]] === undefined || (e as any)[val[1][i]] === false) {
-						pass = false;
-					}
-				}
-			}
-			return pass;
-		});
+		const act = findMatchingHotkey(this.options.hotkeys.keys, e);
 		if (act !== undefined) {
 			this.runHotkey(act[0]);
 		}
@@ -1789,55 +1735,23 @@ export class Accessibility implements IAccessibility {
 	}
 
 	saveSession() {
-		this._storage.set('_accessState', this.sessionState);
+		saveSessionState(this._storage, this.sessionState);
 	}
 
 	setSessionFromCache() {
-		let sessionState = this._storage.get('_accessState');
-		if (sessionState) {
-			if (sessionState.textSize) {
-				let textSize = sessionState.textSize;
-				if (textSize > 0) {
-					while (textSize--) {
-						this.alterTextSize(true);
-					}
-				} else {
-					while (textSize++) {
-						this.alterTextSize(false);
-					}
-				}
+		restoreSessionState(this._storage, {
+			applyTextSize: (isIncrease: boolean) => this.alterTextSize(isIncrease),
+			applyTextSpace: (isIncrease: boolean) => this.alterTextSpace(isIncrease),
+			applyLineHeight: (isIncrease: boolean) => this.alterLineHeight(isIncrease),
+			enableInvertColors: () => this.menuInterface.invertColors(),
+			enableGrayHues: () => this.menuInterface.grayHues(),
+			enableUnderlineLinks: () => this.menuInterface.underlineLinks(),
+			enableBigCursor: () => this.menuInterface.bigCursor(),
+			enableReadingGuide: () => this.menuInterface.readingGuide(),
+			assignSessionState: (sessionState: ISessionState) => {
+				this.sessionState = sessionState;
 			}
-			if (sessionState.textSpace) {
-				let textSpace = sessionState.textSpace;
-				if (textSpace > 0) {
-					while (textSpace--) {
-						this.alterTextSpace(true);
-					}
-				} else {
-					while (textSpace++) {
-						this.alterTextSpace(false);
-					}
-				}
-			}
-			if (sessionState.lineHeight) {
-				let lineHeight = sessionState.lineHeight;
-				if (lineHeight > 0) {
-					while (lineHeight--) {
-						this.alterLineHeight(true);
-					}
-				} else {
-					while (lineHeight++) {
-						this.alterLineHeight(false);
-					}
-				}
-			}
-			if (sessionState.invertColors) this.menuInterface.invertColors();
-			if (sessionState.grayHues) this.menuInterface.grayHues();
-			if (sessionState.underlineLinks) this.menuInterface.underlineLinks();
-			if (sessionState.bigCursor) this.menuInterface.bigCursor();
-			if (sessionState.readingGuide) this.menuInterface.readingGuide();
-			this.sessionState = sessionState;
-		}
+		});
 	}
 
 	destroy() {
