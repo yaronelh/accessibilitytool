@@ -1,5 +1,6 @@
 'use strict';
 
+import { sanitizeDomAttribute } from './core/security.js';
 import {
 	ICommon,
 	IDeployedObjects,
@@ -41,10 +42,12 @@ export class Common implements ICommon {
 
 	jsonToHtml(obj: IJsonToHtml): HTMLElement {
 		let elm = document.createElement(obj.type);
-		for (let i in obj.attrs) {
-			elm.setAttribute(i, obj.attrs[i]);
+		const attrs = obj.attrs || {};
+		for (let i in attrs) {
+			const safeValue = sanitizeDomAttribute(obj.type.toLowerCase(), i, attrs[i]);
+			if (safeValue !== null) elm.setAttribute(i, safeValue);
 		}
-		for (let i in obj.children) {
+		for (let i in obj.children || []) {
 			let newElem = null as any;
 			if (obj.children[i].type === '#text') {
 				newElem = document.createTextNode(obj.children[i].text);

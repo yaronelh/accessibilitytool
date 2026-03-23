@@ -1,10 +1,12 @@
 import { Storage } from '../storage.js';
 import { ISessionState } from '../interfaces/accessibility.interface.js';
 
-const SESSION_STORAGE_KEY = '_accessState';
+const SESSION_STORAGE_KEY = 'accessibility:session:v1';
+const LEGACY_SESSION_STORAGE_KEY = '_accessState';
 
 export function saveSessionState(storage: Storage, sessionState: ISessionState) {
 	storage.set(SESSION_STORAGE_KEY, sessionState);
+	storage.remove(LEGACY_SESSION_STORAGE_KEY);
 }
 
 export function restoreSessionState(
@@ -21,7 +23,8 @@ export function restoreSessionState(
 		assignSessionState(sessionState: ISessionState): void;
 	}
 ) {
-	const sessionState = storage.get(SESSION_STORAGE_KEY) as ISessionState | null;
+	const sessionState = (storage.get(SESSION_STORAGE_KEY) ??
+		storage.get(LEGACY_SESSION_STORAGE_KEY)) as ISessionState | null;
 	if (!sessionState) return;
 
 	replayDelta(sessionState.textSize, handlers.applyTextSize);

@@ -46,6 +46,7 @@ export interface IAccessibilityOptions {
 	session?: IAccessibilitySessionOptions;
 	iframeModals?: Array<IIframeModal>;
 	customFunctions?: Array<ICustomFunction>;
+	allowedIframeOrigins?: string[];
 	statement?: IAccessibilityUrlOptions;
 	feedback?: IAccessibilityUrlOptions;
 	language?: IAccessibilityLanguageOptions;

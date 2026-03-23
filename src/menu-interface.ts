@@ -1,5 +1,6 @@
 import { IAccessibility } from './interfaces/accessibility.interface.js';
 import { IMenuInterface } from './interfaces/menu.interface.js';
+import { normalizeIframeUrl } from './core/security.js';
 
 export class MenuInterface implements IMenuInterface {
 	private _acc: IAccessibility;
@@ -512,6 +513,15 @@ export class MenuInterface implements IMenuInterface {
 		if (destroy) {
 			close();
 		} else {
+			const iframeUrl = normalizeIframeUrl(
+				button.getAttribute('data-access-url'),
+				this._acc.options.allowedIframeOrigins || []
+			);
+			if (!iframeUrl) {
+				this._acc.common.warn('Blocked unsafe iframe URL');
+				return;
+			}
+
 			button.classList.add('active');
 			if (!this._dialog) this._dialog = document.createElement('dialog');
 			this._dialog.classList.add('_access');
@@ -554,8 +564,11 @@ export class MenuInterface implements IMenuInterface {
 								{
 									type: 'iframe',
 									attrs: {
-										src: button.getAttribute('data-access-url'),
-										style: 'width: 50vw;height: 50vh;padding: 30px;'
+										src: iframeUrl,
+										style: 'width: 50vw;height: 50vh;padding: 30px;',
+										sandbox: 'allow-same-origin allow-scripts',
+										referrerpolicy: 'no-referrer',
+										loading: 'lazy'
 									}
 								}
 							]

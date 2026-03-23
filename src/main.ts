@@ -9,6 +9,7 @@ import {
 	disableUnsupportedFeatures,
 	ensureModuleOrder
 } from './core/options.js';
+import { escapeCssString } from './core/security.js';
 import { restoreSessionState, saveSessionState } from './core/session.js';
 import {
 	IAccessibility,
@@ -1002,7 +1003,7 @@ export class Accessibility implements IAccessibility {
 				if (icon) {
 					btn.children[0].attrs['data-access-iframe-index'] = i;
 					const css = `._access-menu ul li button[data-access-action="iframeModals"][data-access-iframe-index="${i}"]:before {
-                        content: "${icon}";
+                        content: "${escapeCssString(icon)}";
                     }`;
 					let className = '_data-access-iframe-index-' + i;
 					this._common.injectStyle(css, { className: className });
@@ -1038,10 +1039,10 @@ export class Accessibility implements IAccessibility {
 				if (cf.icon && !this.options.icon.useEmojis) icon = cf.icon;
 				else if (cf.emoji && this.options.icon.useEmojis) icon = cf.emoji;
 				if (icon) {
-					const css = `._access-menu ul li button[data-access-action="customFunctions"][data-access-custom-id="${cf.id}"]:before {
-                        content: "${icon}";
+					const css = `._access-menu ul li button[data-access-action="customFunctions"][data-access-custom-index="${i}"]:before {
+                        content: "${escapeCssString(icon)}";
                     }`;
-					let className = '_data-access-custom-id-' + cf.id;
+					let className = '_data-access-custom-index-' + i;
 					this._common.injectStyle(css, { className: className });
 					this._common.deployedObjects.set('.' + className, false);
 				}
