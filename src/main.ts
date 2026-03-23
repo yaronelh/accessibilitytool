@@ -29,6 +29,8 @@ import { Storage } from './storage.js';
 export class Accessibility implements IAccessibility {
 	static CSS_CLASS_NAME = '_access-main-css';
 	static MENU_WIDTH = '25vw';
+	static MENU_ID = '_access-menu-panel';
+	static MENU_LABEL_ID = '_access-menu-title';
 	private _isReading: boolean;
 	private _common: Common;
 	private _storage: Storage;
@@ -359,34 +361,42 @@ export class Accessibility implements IAccessibility {
             }
             ._access-icon {
                 position: var(--_access-icon-position, fixed);
-                width: var(--_access-icon-width, 50px);
-                height: var(--_access-icon-height, 50px);
-                bottom: var(--_access-icon-bottom, 50px);
+                width: var(--_access-icon-width, 56px);
+                height: var(--_access-icon-height, 56px);
+                bottom: var(--_access-icon-bottom, 24px);
                 top: var(--_access-icon-top, unset);
                 left: var(--_access-icon-left, unset);
-                right: var(--_access-icon-right, 10px);
+                right: var(--_access-icon-right, 16px);
                 z-index: var(--_access-icon-z-index, 9999);
                 font: var(--_access-icon-font, 40px / 45px "Material Icons");
-                background: var(--_access-icon-bg, #4054b2);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: var(--_access-icon-bg, linear-gradient(135deg, #0f766e 0%, #0f172a 100%));
                 color: var(--_access-icon-color, #fff);
                 background-repeat: no-repeat;
                 background-size: contain;
                 cursor: pointer;
                 opacity: 0;
-                transition-duration: .35s;
+                transition: transform .25s ease, box-shadow .25s ease, opacity .35s ease;
                 -moz-user-select: none;
                 -webkit-user-select: none;
                 -ms-user-select: none;
                 user-select: none;
-                ${!this.options.icon.useEmojis ? 'box-shadow: 1px 1px 5px rgba(0,0,0,.5);' : ''}
-                transform: ${!this.options.icon.useEmojis ? 'scale(1)' : 'skewX(14deg)'};
-                border-radius: var(--_access-icon-border-radius);
-                border: var(--_access-icon-border);
+                box-shadow: var(--_access-icon-box-shadow, 0 14px 28px rgba(15, 23, 42, 0.24));
+                transform: ${!this.options.icon.useEmojis ? 'translateY(0)' : 'translateY(0)'};
+                border-radius: var(--_access-icon-border-radius, 18px);
+                border: var(--_access-icon-border, 1px solid rgba(255,255,255,0.18));
                 text-align: var(--_access-icon-text-align, center);
+                backdrop-filter: blur(10px);
             }
             ._access-icon:hover {
-                transform: var(--_access-icon-transform-hover, scale(1.1));
+                transform: var(--_access-icon-transform-hover, translateY(-2px) scale(1.04));
                 vertical-align: var(--_access-icon-vertical-align-hover);
+            }
+            ._access-icon:focus-visible {
+                outline: none;
+                box-shadow: var(--_access-icon-focus-shadow, 0 0 0 4px rgba(15, 118, 110, 0.28), 0 18px 34px rgba(15, 23, 42, 0.22));
             }
             ._access-menu {
                 -moz-user-select: none;
@@ -396,77 +406,94 @@ export class Accessibility implements IAccessibility {
                 position: fixed;
                 width: var(--_access-menu-width, ${Accessibility.MENU_WIDTH});
                 height: var(--_access-menu-height, auto);
+                max-width: var(--_access-menu-max-width, min(24rem, calc(100vw - 1.5rem)));
                 transition-duration: var(--_access-menu-transition-duration, .35s);
+                transition-property: opacity, transform;
                 z-index: var(--_access-menu-z-index, 99991);
                 opacity: 1;
-                background-color: var(--_access-menu-background-color, #fff);
-                color: var(--_access-menu-color, #000);
-                border-radius: var(--_access-menu-border-radius, 3px);
-                border: var(--_access-menu-border, solid 1px #f1f0f1);
-                font-family: var(--_access-menu-font-family, RobotoDraft, Roboto, sans-serif, Arial);
+                transform: translateY(0);
+                background: var(--_access-menu-background-color, linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(248,250,252,0.98) 100%));
+                color: var(--_access-menu-color, #0f172a);
+                border-radius: var(--_access-menu-border-radius, 22px);
+                border: var(--_access-menu-border, 1px solid rgba(148,163,184,0.28));
+                font-family: var(--_access-menu-font-family, "Segoe UI", "Helvetica Neue", Arial, sans-serif);
                 min-width: var(--_access-menu-min-width, 300px);
-                box-shadow: var(--_access-menu-box-shadow, 0px 0px 1px #aaa);
-                max-height: calc(100vh - 80px);
+                box-shadow: var(--_access-menu-box-shadow, 0 24px 80px rgba(15, 23, 42, 0.24));
+                max-height: calc(100vh - 32px);
+                overflow: hidden;
+                backdrop-filter: blur(14px);
                 ${getComputedStyle(this._body).direction === 'rtl' ? 'text-indent: -5px' : ''}
                 top: var(--_access-menu-top, unset);
                 left: var(--_access-menu-left, unset);
-                bottom: var(--_access-menu-bottom, 0);
-                right: var(--_access-menu-right, 0);
+                bottom: var(--_access-menu-bottom, 16px);
+                right: var(--_access-menu-right, 16px);
             }
             ._access-menu.close {
                 z-index: -1;
                 width: 0;
                 opacity: 0;
                 background-color: transparent;
+                transform: translateY(12px);
                 left: calc(-1 * var(--_access-menu-left), unset);
                 right: calc(-1 * var(--_access-menu-width, ${Accessibility.MENU_WIDTH}));
             }
             ._access-menu ._text-center {
-                font-size: var(--_access-menu-header-font-size, 22px);
-                font-weight: var(--_access-menu-header-font-weight, nornal);
-                margin: var(--_access-menu-header-margin, 20px 0 10px);
-                padding: 0;
-                color: var(--_access-menu-header-color, rgba(0,0,0,.87));
+                font-size: var(--_access-menu-header-font-size, 1.2rem);
+                font-weight: var(--_access-menu-header-font-weight, 700);
+                margin: var(--_access-menu-header-margin, 0);
+                padding: 1rem 1rem 0.75rem;
+                color: var(--_access-menu-header-color, #0f172a);
                 letter-spacing: var(--_access-menu-header-letter-spacing, initial);
                 word-spacing: var(--_access-menu-header-word-spacing, initial);
                 text-align: var(--_access-menu-header-text-align, center);
+                position: sticky;
+                top: 0;
+                background: inherit;
+                z-index: 1;
+                border-bottom: 1px solid rgba(148,163,184,0.18);
             }
             ._access-menu ._menu-close-btn {
-                left: 5px;
-                color: #d63c3c;
+                left: 12px;
+                color: var(--_access-menu-close-btn-color, #b91c1c);
                 transition: .3s ease;
                 transform: rotate(0deg);
                 font-style: normal !important;
             }
             ._access-menu ._menu-reset-btn:hover,._access-menu ._menu-close-btn:hover {
-                transform: var(--_access-menu-header-btn-hover-rotate, rotate(180deg));
+                transform: var(--_access-menu-header-btn-hover-rotate, scale(1.08));
             }
             ._access-menu ._menu-reset-btn {
-                right: 5px;
-                color: #4054b2;
+                right: 12px;
+                color: var(--_access-menu-reset-btn-color, #0f766e);
                 transition: .3s ease;
                 transform: rotate(0deg);
                 font-style: normal !important;
             }
             ._access-menu ._menu-btn {
                 position: absolute;
-                top: 5px;
+                top: 10px;
                 cursor: pointer;
                 font-size: 24px !important;
                 font-weight: bold;
-                background: transparent;
-                border: none;
+                background: rgba(255,255,255,0.72);
+                border: 1px solid rgba(148,163,184,0.24);
+                border-radius: 999px;
+                width: 34px;
+                height: 34px;
+                line-height: 34px;
+                padding: 0;
             }
             ._access-menu ul {
-                padding: 0 0 5px;
+                padding: 0.75rem;
                 position: relative;
                 font-size: var(--_access-menu-font-size, 18px);
                 margin: 0;
                 overflow: auto;
-                max-height: var(--_access-menu-max-height, calc(100vh - 145px));
+                max-height: var(--_access-menu-max-height, calc(100vh - 104px));
                 display: flex;
                 flex-flow: column;
-                gap: 5px;
+                gap: 0.6rem;
+                overscroll-behavior: contain;
             }
             ${mandatory}
             ._access-menu ul li {
@@ -476,27 +503,29 @@ export class Accessibility implements IAccessibility {
                 -moz-user-select: none;
                 -webkit-user-select: none;
                 user-select: none;
-                margin: 0 5px 0 8px;
+                margin: 0;
                 font: { size: 18, units: 'px' }
-                font-size: var(--_access-menu-item-font-size, 18px) !important;
-                line-height: var(--_access-menu-item-line-height, 18px) !important;
-                color: var(--_access-menu-item-color, rgba(0,0,0,.6));
+                font-size: var(--_access-menu-item-font-size, 16px) !important;
+                line-height: var(--_access-menu-item-line-height, 20px) !important;
+                color: var(--_access-menu-item-color, rgba(15,23,42,.82));
                 letter-spacing: var(--_access-menu-item-letter-spacing, initial);
                 word-spacing: var(--_access-menu-item-word-spacing, initial);
-                width: calc(100% - 17px);
+                width: 100%;
             }
             ._access-menu ul li button {
-                background: var(--_access-menu-item-button-background, #f9f9f9);
-                padding: var(--_access-menu-item-button-padding, 10px 0);
+                background: var(--_access-menu-item-button-background, rgba(255,255,255,0.78));
+                padding: var(--_access-menu-item-button-padding, 0.95rem 0.95rem 0.95rem 0);
                 width: 100%;
-                text-indent: var(--_access-menu-item-button-text-indent, 35px);
+                min-height: 54px;
+                text-indent: var(--_access-menu-item-button-text-indent, 44px);
                 text-align: start;
                 position: relative;
                 transition-duration: var(--_access-menu-item-button-transition-duration, .35s);
                 transition-timing-function: var(--_access-menu-item-button-transition-timing-function, ease-in-out);
-                border: var(--_access-menu-item-button-border, solid 1px #f1f0f1);
-                border-radius: var(--_access-menu-item-button-border-radius, 4px);
+                border: var(--_access-menu-item-button-border, 1px solid rgba(148,163,184,0.2));
+                border-radius: var(--_access-menu-item-button-border-radius, 16px);
                 cursor: pointer;
+                box-shadow: var(--_access-menu-item-button-box-shadow, 0 10px 25px rgba(15, 23, 42, 0.06));
             }
             ._access-menu ul li.position {
                 display: inline-block;
@@ -506,7 +535,7 @@ export class Accessibility implements IAccessibility {
                 opacity: var(--_access-menu-item-button-before-collapse-opacity, 0.05);
             }
             ._access-menu ul li button.active, ._access-menu ul li button.active:hover {
-                background-color: var(--_access-menu-item-button-active-background-color, #000);
+                background: var(--_access-menu-item-button-active-background-color, linear-gradient(135deg, #0f766e 0%, #115e59 100%));
             }
             ._access-menu div.active {
                 color: var(--_access-menu-div-active-color, #fff);
@@ -516,11 +545,17 @@ export class Accessibility implements IAccessibility {
                 color: var(--_access-menu-item-button-active-color, #fff);
             }
             ._access-menu ul li button:hover {
-                color: var(--_access-menu-item-button-hover-color, rgba(0,0,0,.8));
-                background-color: var(--_access-menu-item-button-hover-background-color, #eaeaea);
+                color: var(--_access-menu-item-button-hover-color, rgba(15,23,42,.92));
+                background: var(--_access-menu-item-button-hover-background-color, rgba(241,245,249,0.96));
+                transform: translateY(-1px);
             }
             ._access-menu ul li.not-supported {
                 display: none;
+            }
+            ._access-menu ._menu-btn:focus-visible,
+            ._access-menu ul li button:focus-visible {
+                outline: none;
+                box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.18);
             }
             ._access-menu ul li button:before {
                 content: ' ';
@@ -536,28 +571,28 @@ export class Accessibility implements IAccessibility {
                 display: inline-block;
                 overflow: hidden;
                 -webkit-font-smoothing: antialiased;
-                top: 7px;
-                left: 5px;
+                top: 12px;
+                left: 10px;
                 position: absolute;
-                color: var(--_access-menu-item-icon-color, rgba(0,0,0,.6));
+                color: var(--_access-menu-item-icon-color, rgba(15,23,42,.72));
                 direction: ltr;
                 text-indent: 0;
                 transition-duration: .35s;
                 transition-timing-function: ease-in-out;
             }
             ._access-menu ul li button svg path {
-                fill: var(--_access-menu-item-icon-color, rgba(0,0,0,.6));
+                fill: var(--_access-menu-item-icon-color, rgba(15,23,42,.72));
                 transition-duration: .35s;
                 transition-timing-function: ease-in-out;
             }
             ._access-menu ul li button:hover svg path {
-                fill: var(--_access-menu-item-hover-icon-color, rgba(0,0,0,.8));
+                fill: var(--_access-menu-item-hover-icon-color, rgba(15,23,42,.9));
             }
             ._access-menu ul li button.active svg path {
                 fill: var(--_access-menu-item-active-icon-color, #fff);
             }
             ._access-menu ul li:hover button:before {
-                color: var(--_access-menu-item-hover-icon-color, rgba(0,0,0,.8));
+                color: var(--_access-menu-item-hover-icon-color, rgba(15,23,42,.9));
             }
             ._access-menu ul li button.active button:before {
                 color: var(--_access-menu-item-active-icon-color, #fff);
@@ -658,6 +693,32 @@ export class Accessibility implements IAccessibility {
                 transform: var(--_access-menu-item-icon-decrease-line-height-transform, unset);
                 top: var(--_access-menu-item-icon-decrease-line-height-top, ${iconTop});
                 left: var(--_access-menu-item-icon-decrease-line-height-left, ${iconLeft});
+            }
+            @media (max-width: 768px) {
+                ._access-icon {
+                    right: var(--_access-icon-right-mobile, 12px);
+                    bottom: var(--_access-icon-bottom-mobile, 12px);
+                }
+                ._access-menu {
+                    width: calc(100vw - 1rem);
+                    min-width: unset;
+                    max-width: unset;
+                    right: 0.5rem;
+                    left: 0.5rem;
+                    bottom: 0.5rem;
+                    max-height: calc(100vh - 1rem);
+                }
+            }
+            @media (prefers-reduced-motion: reduce) {
+                ._access-icon,
+                ._access-menu,
+                ._access-menu ._menu-btn,
+                ._access-menu ul li button,
+                ._access-menu ul li button:before,
+                ._access-menu ul li button svg path {
+                    transition-duration: 0.01ms !important;
+                    animation-duration: 0.01ms !important;
+                }
             }`;
 		} else {
 			css = mandatory;
@@ -693,11 +754,15 @@ export class Accessibility implements IAccessibility {
 			type: 'i',
 			attrs: {
 				class: className,
-				// 'style': iStyle,
 				title: this.options.hotkeys.enabled
 					? this.parseKeys(this.options.hotkeys.keys.toggleMenu)
 					: this.options.labels.menuTitle,
-				tabIndex: 0
+				tabIndex: 0,
+				role: 'button',
+				'aria-controls': Accessibility.MENU_ID,
+				'aria-haspopup': 'dialog',
+				'aria-expanded': 'false',
+				'aria-label': this.options.labels.menuTitle
 			},
 			children: [this.options.icon.imgElem]
 		});
@@ -711,18 +776,41 @@ export class Accessibility implements IAccessibility {
 		return parseHotkeyLabel(this.options.hotkeys, this.options.labels.hotkeyPrefix, arr);
 	}
 
+	private syncMenuState(isOpen: boolean) {
+		if (this._icon) {
+			this._icon.setAttribute('aria-expanded', String(isOpen));
+			this._icon.setAttribute('aria-label', this.options.labels.menuTitle);
+			this._icon.tabIndex = isOpen ? -1 : 0;
+		}
+
+		if (!this._menu) return;
+
+		this._menu.setAttribute('aria-hidden', String(!isOpen));
+
+		if (isOpen) {
+			const firstButton = this._menu.querySelector('button');
+			if (firstButton instanceof HTMLElement) firstButton.focus();
+		}
+	}
+
 	injectMenu(): HTMLElement {
 		const json = {
 			type: 'div',
 			attrs: {
-				class: '_access-menu close _access'
+				class: '_access-menu close _access',
+				id: Accessibility.MENU_ID,
+				role: 'dialog',
+				'aria-modal': 'false',
+				'aria-labelledby': Accessibility.MENU_LABEL_ID,
+				'aria-hidden': 'true'
 			},
 			children: [
 				{
 					type: 'p',
 					attrs: {
 						class: '_text-center',
-						role: 'presentation'
+						role: 'presentation',
+						id: Accessibility.MENU_LABEL_ID
 					},
 					children: [
 						{
@@ -732,7 +820,9 @@ export class Accessibility implements IAccessibility {
 								style: `font-family: var(--_access-menu-close-btn-font-family, ${this._fixedDefaultFont})`,
 								title: this.options.hotkeys.enabled
 									? this.parseKeys(this.options.hotkeys.keys.toggleMenu)
-									: this.options.labels.closeTitle
+									: this.options.labels.closeTitle,
+								'aria-label': this.options.labels.closeTitle,
+								type: 'button'
 							},
 							children: [this.options.icon.closeIconElem]
 						},
@@ -745,7 +835,9 @@ export class Accessibility implements IAccessibility {
 							attrs: {
 								class: `_menu-reset-btn _menu-btn ${this.options.icon.fontClass}`,
 								style: `font-family: var(--_access-menu-reset-btn-font-family, ${this._fixedDefaultFont})`,
-								title: this.options.labels.resetTitle
+								title: this.options.labels.resetTitle,
+								'aria-label': this.options.labels.resetTitle,
+								type: 'button'
 							},
 							children: [this.options.icon.resetIconElem]
 						}
@@ -754,7 +846,8 @@ export class Accessibility implements IAccessibility {
 				{
 					type: 'ul',
 					attrs: {
-						class: 'before-collapse _access-scrollbar'
+						class: 'before-collapse _access-scrollbar',
+						role: 'list'
 					},
 					children: [
 						{
@@ -1626,6 +1719,7 @@ export class Accessibility implements IAccessibility {
 	}
 	toggleMenu() {
 		const shouldClose = this._menu.classList.contains('close');
+		const isOpening = shouldClose;
 		setTimeout(
 			() => {
 				this._menu.querySelector('ul').classList.toggle('before-collapse');
@@ -1633,8 +1727,8 @@ export class Accessibility implements IAccessibility {
 			shouldClose ? 500 : 10
 		);
 		this._menu.classList.toggle('close');
+		this.syncMenuState(isOpening);
 
-		this.options.icon.tabIndex = shouldClose ? 0 : -1;
 		this._menu.childNodes.forEach((child) => {
 			if (child.hasChildNodes()) {
 				if (child.nodeType === Node.ELEMENT_NODE && (child as HTMLElement).tagName === 'P') {
@@ -1673,6 +1767,7 @@ export class Accessibility implements IAccessibility {
 		if (!this.options.suppressDomInjection) {
 			this._icon = this.injectIcon();
 			this._menu = this.injectMenu();
+			this.syncMenuState(false);
 			this.injectTts();
 			setTimeout(() => {
 				this.addListeners();
@@ -1684,7 +1779,8 @@ export class Accessibility implements IAccessibility {
 
 			this._icon.addEventListener(
 				'click',
-				() => {
+				(event) => {
+					if (!isActivationEvent(event)) return;
 					this.toggleMenu();
 				},
 				false
@@ -1692,9 +1788,18 @@ export class Accessibility implements IAccessibility {
 			this._icon.addEventListener(
 				'keyup',
 				(event) => {
-					if (event.key === 'Enter') {
-						this.toggleMenu();
-					}
+					if (!isActivationEvent(event)) return;
+					this.toggleMenu();
+				},
+				false
+			);
+			this._menu.addEventListener(
+				'keydown',
+				(event) => {
+					if (event.key !== 'Escape') return;
+					event.preventDefault();
+					this.toggleMenu();
+					this._icon.focus();
 				},
 				false
 			);

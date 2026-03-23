@@ -62,6 +62,36 @@ describe('Accessibility', () => {
 		expect(menu?.classList.contains('close')).toBe(false);
 	});
 
+	it('keeps icon and menu accessibility state in sync when toggled', () => {
+		createInstance();
+
+		const icon = document.querySelector('._access-icon') as HTMLElement | null;
+		const menu = document.querySelector('._access-menu') as HTMLElement | null;
+
+		expect(icon?.getAttribute('aria-expanded')).toBe('false');
+		expect(menu?.getAttribute('aria-hidden')).toBe('true');
+
+		icon?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+		expect(icon?.getAttribute('aria-expanded')).toBe('true');
+		expect(menu?.getAttribute('aria-hidden')).toBe('false');
+		expect(document.activeElement?.classList.contains('_menu-close-btn')).toBe(true);
+	});
+
+	it('closes the menu with Escape and restores focus to the toggle', () => {
+		createInstance();
+
+		const icon = document.querySelector('._access-icon') as HTMLElement | null;
+		const menu = document.querySelector('._access-menu') as HTMLElement | null;
+
+		icon?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+		menu?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+
+		expect(menu?.classList.contains('close')).toBe(true);
+		expect(icon?.getAttribute('aria-expanded')).toBe('false');
+		expect(document.activeElement).toBe(icon);
+	});
+
 	it('cleans up injected nodes on destroy', () => {
 		const instance = createInstance();
 
