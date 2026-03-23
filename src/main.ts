@@ -29,7 +29,7 @@ import { Storage } from './storage.js';
 
 export class Accessibility implements IAccessibility {
 	static CSS_CLASS_NAME = '_access-main-css';
-	static MENU_WIDTH = '25vw';
+	static MENU_WIDTH = 'clamp(18rem, 30vw, 22rem)';
 	static MENU_ID = '_access-menu-panel';
 	static MENU_LABEL_ID = '_access-menu-title';
 	private _isReading: boolean;
@@ -465,7 +465,7 @@ export class Accessibility implements IAccessibility {
                 position: fixed;
                 width: var(--_access-menu-width, ${Accessibility.MENU_WIDTH});
                 height: var(--_access-menu-height, auto);
-                max-width: var(--_access-menu-max-width, min(20rem, calc(100vw - 1rem)));
+                max-width: var(--_access-menu-max-width, calc(100vw - 1rem));
                 transition-duration: var(--_access-menu-transition-duration, .35s);
                 transition-property: opacity, transform;
                 z-index: var(--_access-menu-z-index, 99991);
@@ -476,7 +476,7 @@ export class Accessibility implements IAccessibility {
                 border-radius: var(--_access-menu-border-radius, 18px);
                 border: var(--_access-menu-border, 1px solid rgba(148,163,184,0.28));
                 font-family: var(--_access-menu-font-family, "Segoe UI", "Helvetica Neue", Arial, sans-serif);
-                min-width: var(--_access-menu-min-width, 280px);
+                min-width: var(--_access-menu-min-width, 0);
                 box-shadow: var(--_access-menu-box-shadow, 0 20px 60px rgba(15, 23, 42, 0.18));
                 max-height: calc(100vh - 24px);
                 overflow: hidden;
@@ -493,8 +493,7 @@ export class Accessibility implements IAccessibility {
                 opacity: 0;
                 background-color: transparent;
                 transform: translateY(12px);
-                left: calc(-1 * var(--_access-menu-left), unset);
-                right: calc(-1 * var(--_access-menu-width, ${Accessibility.MENU_WIDTH}));
+                pointer-events: none;
             }
             ._access-menu ._text-center {
                 font-size: var(--_access-menu-header-font-size, 1.05rem);
@@ -669,6 +668,44 @@ export class Accessibility implements IAccessibility {
                     left: 0.5rem;
                     bottom: 0.5rem;
                     max-height: calc(100vh - 1rem);
+                }
+            }
+            @media (max-width: 480px) {
+                ._access-menu {
+                    border-radius: 16px;
+                }
+                ._access-menu ._text-center {
+                    font-size: 1rem;
+                    padding: 0.7rem 2.5rem 0.55rem;
+                }
+                ._access-menu ._menu-btn {
+                    top: 8px;
+                    width: 26px;
+                    height: 26px;
+                }
+                ._access-menu ._menu-btn img {
+                    width: 13px;
+                    height: 13px;
+                }
+                ._access-menu ul {
+                    padding: 0.45rem;
+                    gap: 0.35rem;
+                    max-height: calc(100vh - 4.75rem);
+                }
+                ._access-menu ul li {
+                    font-size: 13px !important;
+                    line-height: 17px !important;
+                }
+                ._access-menu ul li button {
+                    min-height: 40px;
+                    padding: 0.68rem 0.7rem 0.68rem 0;
+                    text-indent: 32px;
+                }
+                ._access-menu ul li button:before {
+                    width: 17px;
+                    height: 17px;
+                    top: 11px;
+                    left: 9px;
                 }
             }
             @media (prefers-reduced-motion: reduce) {

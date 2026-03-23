@@ -144,11 +144,11 @@ Important browser checks include:
 - speech-to-text is disabled when speech recognition is unavailable or the page is not running over HTTPS
 - text-to-speech is disabled when `SpeechSynthesisUtterance` or `speechSynthesis` is unavailable
 
-### 2. Font strategy
+### 2. Icon strategy
 
-The toolbar icon and menu icons use Material Icons by default.
+The modernized fork ships with bundled local SVG defaults for the launcher, header controls, and built-in menu actions.
 
-The constructor tries to inject the icon font from Google Fonts. If loading fails, or if validation says the font is unavailable, it falls back to emoji icons by calling `fontFallback()`.
+By default, the constructor does not load Google Fonts or any other remote icon font. If a host explicitly configures remote font sources and opts into them, the runtime can still inject those stylesheets. Otherwise it stays self-contained and falls back to local-safe behavior.
 
 ### 3. Build phase
 

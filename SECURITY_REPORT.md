@@ -134,7 +134,7 @@ Evidence:
 
 Details:
 
-By default, the library loads Material Icons from Google Fonts at runtime. This is not a direct code execution flaw, but it adds:
+This was an issue in the original implementation: the library defaulted to loading Material Icons from Google Fonts at runtime. In the current fork, remote icon font loading has been changed to opt-in. The risk still matters when a host explicitly enables remote font URLs, because it adds:
 
 - a third-party dependency in the browser path
 - metadata leakage to an external service
@@ -142,15 +142,15 @@ By default, the library loads Material Icons from Google Fonts at runtime. This 
 
 Impact:
 
-- privacy-sensitive deployments may not allow this behavior
-- a strict CSP may block the library by default
-- compromise or unexpected behavior in the third-party asset path affects widget rendering
+- privacy-sensitive deployments may not allow this behavior when enabled
+- a strict CSP may block the library if remote font loading is explicitly turned on
+- compromise or unexpected behavior in the third-party asset path affects widget rendering when the host chooses that path
 
 Recommended remediation:
 
-- default to bundled local assets or emoji fallback
-- document the required CSP directives clearly
-- make remote font loading opt-in rather than opt-out
+- keep bundled local assets as the default path
+- document the required CSP directives clearly for explicit remote-font opt-in
+- prefer self-hosted assets if remote fonts are truly needed
 
 ### 5. Storage helper can clear all origin localStorage
 

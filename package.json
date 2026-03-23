@@ -1,6 +1,6 @@
 {
 	"name": "accessibility",
-	"version": "6.1.0",
+	"version": "1.0.1",
 	"description": "add accessibility to your website",
 	"main": "./dist-cjs/main.js",
 	"module": "./dist/main.js",

@@ -1,14 +1,14 @@
 # Changelog
 
-This file tracks versioned changes for this fork of `accessibility`.
+This file tracks versioned changes for the `accessibilitytool` repository.
 
 There are no Git tags in this repository. The latest upstream version marker found in commit history is `6.1.0` at commit `1cfaa72` (`master - build version 6.1.0`).
 
-All fork work completed after that point is recorded below as the next fork revision on top of `6.1.0`.
+All fork work completed after that point is recorded below as the first independent fork release line built on top of `6.1.0`.
 
-## [6.1.0-fork.1] - 2026-03-23
+## [1.0.1] - 2026-03-23
 
-Fork maintenance and modernization release built on top of upstream `6.1.0`.
+First modernized fork release, built on top of upstream `6.1.0`.
 
 ### Added
 
@@ -72,6 +72,17 @@ Fork maintenance and modernization release built on top of upstream `6.1.0`.
 - Refreshed the injected toolbar and menu styling to improve appearance, responsiveness, focus treatment, and reduced-motion behavior without changing the public API surface.
 - Moved session persistence from the legacy `_accessState` key to `accessibility:session:v1`, while preserving backward-compatible restore behavior from the old key.
 - Changed default icon behavior so the library no longer fetches remote icon fonts unless `icon.allowRemoteFonts` is explicitly enabled.
+- Reworked the default launcher tile to use a single blue background with a bundled Material `accessibility_new` icon sized to fit cleanly inside the tile.
+- Replaced the default menu and header icon set with locally bundled Material Design / Material Symbols SVG assets instead of ad hoc icon geometry.
+- Tightened toolbar and menu density:
+  - reduced oversized visual chrome
+  - improved close/reset affordances
+  - reduced wasted spacing in menu rows
+  - replaced improvised glyphs with proper SVG icons
+- Rotated the text-spacing icon treatment so the spacing controls read in the intended orientation.
+- Reworked menu responsiveness so the panel now scales fluidly across desktop viewport widths instead of staying visually fixed until the mobile breakpoint.
+- Added a denser small-screen layout pass for very narrow screens, including tighter header/button sizing and more compact menu row spacing below `480px`.
+- Simplified the closed-menu behavior so it no longer depends on the earlier negative-position width hack.
 
 ### Security
 
@@ -91,6 +102,7 @@ Fork maintenance and modernization release built on top of upstream `6.1.0`.
 - Removed `tslint`.
 - Removed `tslint-loader`.
 - Removed `tslint.json`.
+- Removed stale handcrafted/default icon path definitions that were no longer the source of truth after the Material icon migration.
 
 ### Verification
 
@@ -103,7 +115,16 @@ Fork maintenance and modernization release built on top of upstream `6.1.0`.
   - `npm pack --dry-run --cache /tmp/accessibility-npm-cache`
 - Latest automated verification status at the time of writing:
   - `2` passing test files
-  - `10` passing tests
+  - `13` passing tests
+
+### Notes
+
+- Some action-to-icon mappings are now fully Material-backed but still semantically approximate and may be refined further:
+  - `gray hues`
+  - `reading guide`
+  - `disable animations`
+  - separate increase/decrease variants for text spacing
+  - separate increase/decrease variants for line height
 
 ## [6.1.0] - Upstream Pre-Fork
 

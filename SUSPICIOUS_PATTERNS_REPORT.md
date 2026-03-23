@@ -124,17 +124,16 @@ Severity: `low`
 
 Evidence:
 
-- [package.json:50](/home/yaron/accessibilitytool/accessibilitytool/package.json#L50)
-- [package.json:51](/home/yaron/accessibilitytool/accessibilitytool/package.json#L51)
-- [tslint.json](/home/yaron/accessibilitytool/accessibilitytool/tslint.json)
+- historical observation during the pre-modernization review
+- current repo state in [package.json](/home/yaron/accessibilitytool/accessibilitytool/package.json)
 
 Why it stands out:
 
-The repo still uses `tslint` and `tslint-loader`, which are deprecated. Old tooling does not imply malice, but stale projects are more likely to accumulate unsafe patterns.
+The repo originally used `tslint` and `tslint-loader`, which were deprecated. That was a maintenance smell during the initial review.
 
 Assessment:
 
-Maintenance concern, not suspicious intent.
+This has since been remediated. The current fork uses ESLint, so this item remains historical context rather than an active concern.
 
 ### 8. Remote font loading in core behavior
 
@@ -142,15 +141,16 @@ Severity: `low`
 
 Evidence:
 
-- [src/main.ts:152](/home/yaron/accessibilitytool/accessibilitytool/src/main.ts#L152)
+- historical observation during the pre-modernization review
+- current implementation in [src/main.ts](/home/yaron/accessibilitytool/accessibilitytool/src/main.ts)
 
 Why it stands out:
 
-Defaulting to a remote asset load from Google Fonts is worth noticing in a suspicious review because it creates an external dependency at runtime.
+The original implementation defaulted to remote Google Fonts loading, which was worth noticing because it created an external dependency at runtime.
 
 Assessment:
 
-This looks like normal UI asset loading, not covert outbound traffic.
+This has since been remediated. Remote icon font loading is now opt-in, so the current default behavior no longer looks suspicious in that way.
 
 ### 9. Broad local storage API
 

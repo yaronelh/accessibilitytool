@@ -98,7 +98,7 @@ The source does interact with browser APIs, but only in ways that match the adve
 - `speechSynthesis` for text-to-speech
 - `SpeechRecognition` or `webkitSpeechRecognition` for speech-to-text
 - `localStorage` for session persistence
-- remote font loading for Material Icons
+- optional remote font loading only when explicitly configured
 - iframe rendering for custom modal content
 
 I did not find code reading cookies, scraping credentials, sending page contents to a remote endpoint, beaconing telemetry, or creating hidden outbound channels.
@@ -143,7 +143,7 @@ The code does have several behaviors that deserve security attention:
 
 - arbitrary DOM generation from config objects
 - dynamic CSS injection
-- remote font loading from Google Fonts
+- optional remote font loading when a host explicitly enables it
 - custom iframe embedding
 - `localStorage` persistence
 

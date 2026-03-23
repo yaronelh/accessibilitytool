@@ -1,3 +1,9 @@
+>Modernized `accessibilitytool` release: this repository is a maintained, modernized version of the original [ranbuch/accessibility](https://github.com/ranbuch/accessibility) library.
+>
+>This fork keeps the same MIT license as the original project and was updated by [Yaron Elharar](https://github.com/yaronelh) using AI with GPT-5.4.
+>
+>Great appreciation goes to the original creator and all contributors to the library.
+
 ## ACCESSIBILITY
 >Add **accessibility toolbar** to your website with one line of code!
 
@@ -8,10 +14,13 @@
 `npm install accessibility`
 
 include script:
-`<script type="text/javascript" src="node_modules/accessibility/dist/main.bundle.js"></script>`
+`<script type="text/javascript" src="node_modules/accessibility/dist/main.js"></script>`
 
 or import:
 `import { Accessibility } from 'accessibility';`
+
+or CommonJS:
+`const { Accessibility } = require('accessibility');`
 
 initialize component:
 `window.addEventListener('load', function() {
