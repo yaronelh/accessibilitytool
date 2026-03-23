@@ -1,10 +1,14 @@
->Modernized `accessibilitytool` release: this repository is a maintained, modernized version of the original [ranbuch/accessibility](https://github.com/ranbuch/accessibility) library.
+> **Note:**
+> This is a modernized version of the original [ranbuch/accessibility](https://github.com/ranbuch/accessibility) by @ranbuch. 
+> This fork keeps the same MIT license as the original project and was vibe updated by [Yaron Elharar](https://github.com/yaronelh) using GPT-5.4.
+> Great appreciation goes to the ranbuch and all contributors to the library.
+> 
+> For full list of changes. See the [changelog](https://github.com/yaronelh/accessibilitytool/blob/master/CHANGELOG.md). Changes include both modernization and security related updates. As identified by GPT-5.4.
 >
->This fork keeps the same MIT license as the original project and was updated by [Yaron Elharar](https://github.com/yaronelh) using AI with GPT-5.4.
->
->Great appreciation goes to the original creator and all contributors to the library.
 
-## ACCESSIBILITY
+![chrome_2026-03-23_21-17-29](https://github.com/user-attachments/assets/c233801c-e417-4bc2-9ead-8af4f1016a02)
+
+## ACCESSIBILITY TOOL (fork of ACCESSIBILITY)
 >Add **accessibility toolbar** to your website with one line of code!
 
 ![Alt text](https://raw.githubusercontent.com/ranbuch/accessibility/master/accessibility.png "accessibility icon")
