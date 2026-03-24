@@ -1,6 +1,6 @@
 {
 	"name": "@yaronelh/accessibilitytool",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "Accessibility toolbar for websites with text, color, cursor, and reading assistance controls",
 	"homepage": "https://github.com/yaronelh/accessibilitytool",
 	"repository": {

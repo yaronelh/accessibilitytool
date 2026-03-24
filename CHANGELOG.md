@@ -6,7 +6,7 @@ There are no Git tags in this repository. The latest upstream version marker fou
 
 All fork work completed after that point is recorded below as the first independent fork release line built on top of `6.1.0`.
 
-## [1.0.1] - 2026-03-23
+## [1.0.2] - 2026-03-24
 
 First modernized fork release, built on top of upstream `6.1.0`.
 
@@ -83,19 +83,19 @@ First modernized fork release, built on top of upstream `6.1.0`.
 - Reworked menu responsiveness so the panel now scales fluidly across desktop viewport widths instead of staying visually fixed until the mobile breakpoint.
 - Added a denser small-screen layout pass for very narrow screens, including tighter header/button sizing and more compact menu row spacing below `480px`.
 - Simplified the closed-menu behavior so it no longer depends on the earlier negative-position width hack.
-- Finalized fork release metadata under version `1.0.1` and aligned package, lockfile, and dry-run publish output to that release number.
+- Finalized fork release metadata under version `1.0.2` and aligned package, lockfile, and dry-run publish output to that release number.
 - Updated repository-facing documentation to use the actual repository and package name `accessibilitytool`.
 - Refreshed the README header to mark this as the modernized `accessibilitytool` release, preserve original-project attribution, note MIT license continuity, and credit the fork maintenance work.
 - Corrected usage and playground docs so they match the current build outputs and tarball names:
   - browser script path now references `dist/main.js`
   - README now includes the CommonJS import form
-  - `commonjs-test` now points at `yaronelh-accessibilitytool-1.0.1.tgz`
+  - `commonjs-test` now points at `yaronelh-accessibilitytool-1.0.2.tgz`
 - Renamed the published package identity to the scoped package `@yaronelh/accessibilitytool` so the fork no longer carries a separate repository/package identity.
 - Updated install/import/playground references to use `@yaronelh/accessibilitytool` consistently.
 - Cleaned up the playgrounds:
   - removed stale dead `#output` wiring from both playground entry files
   - aligned `commonjs-test` to `vite 8.0.2`
-  - refreshed the `commonjs-test` install and lockfile against the `1.0.1` tarball
+  - refreshed the `commonjs-test` install and lockfile against the `1.0.2` tarball
 - Corrected fork documentation that no longer matched the current implementation:
   - removed stale upstream-only README references
   - replaced outdated session-persistence wording

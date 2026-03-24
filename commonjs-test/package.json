@@ -9,7 +9,7 @@
 	},
 	"license": "MIT",
 	"dependencies": {
-		"@yaronelh/accessibilitytool": "file:./yaronelh-accessibilitytool-1.0.1.tgz",
+		"@yaronelh/accessibilitytool": "file:./yaronelh-accessibilitytool-1.0.2.tgz",
 		"vite": "8.0.2"
 	}
 }
