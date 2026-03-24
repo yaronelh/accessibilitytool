@@ -60,7 +60,7 @@
 		"reading guide",
 		"disable animations"
 	],
-	"author": "Ran Buchnik <ranbuch@gmail.com>",
+	"author": "Yaron Elharar <yaronelh@users.noreply.github.com>",
 	"license": "MIT",
 	"devDependencies": {
 		"@material-design-icons/svg": "^0.14.15",

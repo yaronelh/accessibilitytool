@@ -70,7 +70,7 @@ First modernized fork release, built on top of upstream `6.1.0`.
 - Replaced implicit `window.event` usage with explicit event-driven activation handling.
 - Updated menu toggle behavior to keep launcher/menu accessibility state synchronized.
 - Refreshed the injected toolbar and menu styling to improve appearance, responsiveness, focus treatment, and reduced-motion behavior without changing the public API surface.
-- Moved session persistence from the legacy `_accessState` key to `accessibility:session:v1`, while preserving backward-compatible restore behavior from the old key.
+- Moved session persistence to `accessibility:session:v1`, while preserving backward-compatible restore behavior from the legacy session key.
 - Changed default icon behavior so the library no longer fetches remote icon fonts unless `icon.allowRemoteFonts` is explicitly enabled.
 - Reworked the default launcher tile to use a single blue background with a bundled Material `accessibility_new` icon sized to fit cleanly inside the tile.
 - Replaced the default menu and header icon set with locally bundled Material Design / Material Symbols SVG assets instead of ad hoc icon geometry.
@@ -89,8 +89,8 @@ First modernized fork release, built on top of upstream `6.1.0`.
 - Corrected usage and playground docs so they match the current build outputs and tarball names:
   - browser script path now references `dist/main.js`
   - README now includes the CommonJS import form
-  - `commonjs-test` now points at `accessibility-1.0.1.tgz`
-- Renamed the published package identity from `accessibility` to the scoped package `@yaronelh/accessibilitytool` so the fork no longer carries a separate repository/package identity.
+  - `commonjs-test` now points at `yaronelh-accessibilitytool-1.0.1.tgz`
+- Renamed the published package identity to the scoped package `@yaronelh/accessibilitytool` so the fork no longer carries a separate repository/package identity.
 - Updated install/import/playground references to use `@yaronelh/accessibilitytool` consistently.
 - Cleaned up the playgrounds:
   - removed stale dead `#output` wiring from both playground entry files

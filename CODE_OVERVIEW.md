@@ -296,7 +296,7 @@ This is the main extension point for adding site-specific behavior without modif
 
 If `options.session.persistent` is `true`, the library stores state under `accessibility:session:v1` in `localStorage`.
 
-The current fork still restores the legacy `_accessState` key for backward compatibility with older installs.
+The current fork still restores a legacy session key for backward compatibility with older installs.
 
 Persistence is handled by:
 

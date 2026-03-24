@@ -1,6 +1,6 @@
 # accessibilitytool
 
-Modernized fork of the original [ranbuch/accessibility](https://github.com/ranbuch/accessibility).
+Modernized fork of the original accessibility library.
 
 This fork keeps the same MIT license as the original project and was updated by [Yaron Elharar](https://github.com/yaronelh) using GPT-5.4.
 
@@ -12,8 +12,6 @@ For the full list of fork changes, see [CHANGELOG.md](./CHANGELOG.md).
 
 ## Overview
 Add an **accessibility toolbar** to your website with a single line of code.
-
-![Alt text](https://raw.githubusercontent.com/ranbuch/accessibility/master/accessibility.png "accessibility icon")
 
 ### USAGE
 
