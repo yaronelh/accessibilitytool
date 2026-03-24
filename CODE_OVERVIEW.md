@@ -18,7 +18,7 @@ The main public API is the `Accessibility` class exported from [src/main.ts](/ho
 When a consumer runs:
 
 ```ts
-import { Accessibility } from 'accessibility';
+import { Accessibility } from 'accessibilitytool';
 
 new Accessibility();
 ```
@@ -71,7 +71,7 @@ npm run build
 which runs:
 
 ```bash
-rm -rf dist dist-cjs && tsc && tsc -p tsconfig.cjs.json
+npm run clean && tsc -p tsconfig.json && tsc -p tsconfig.cjs.json
 ```
 
 That means:
@@ -294,12 +294,14 @@ This is the main extension point for adding site-specific behavior without modif
 
 ### 8. Session persistence
 
-If `options.session.persistent` is `true`, the library stores state under `_accessState` in `localStorage`.
+If `options.session.persistent` is `true`, the library stores state under `accessibility:session:v1` in `localStorage`.
+
+The current fork still restores the legacy `_accessState` key for backward compatibility with older installs.
 
 Persistence is handled by:
 
-- `saveSession()`
-- `setSessionFromCache()`
+- `saveSessionState()`
+- `restoreSessionState()`
 - [src/storage.ts](/home/yaron/accessibilitytool/accessibilitytool/src/storage.ts)
 
 Persisted state includes:
@@ -313,7 +315,7 @@ Persisted state includes:
 - big cursor
 - reading guide
 
-On startup, `setSessionFromCache()` replays the adjustments rather than restoring raw styles directly.
+On startup, `restoreSessionState()` replays the adjustments rather than restoring raw styles directly.
 
 ## Public API Surface
 

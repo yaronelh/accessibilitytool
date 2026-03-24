@@ -1,7 +1,18 @@
 {
-	"name": "accessibility",
+	"name": "accessibilitytool",
 	"version": "1.0.1",
 	"description": "add accessibility to your website",
+	"homepage": "https://github.com/yaronelh/accessibilitytool",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/yaronelh/accessibilitytool.git"
+	},
+	"bugs": {
+		"url": "https://github.com/yaronelh/accessibilitytool/issues"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
 	"main": "./dist-cjs/main.js",
 	"module": "./dist/main.js",
 	"exports": {

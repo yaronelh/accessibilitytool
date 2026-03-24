@@ -1,39 +1,37 @@
-> **Note:**
-> This is a modernized version of the original [ranbuch/accessibility](https://github.com/ranbuch/accessibility) by @ranbuch. 
-> This fork keeps the same MIT license as the original project and was vibe updated by [Yaron Elharar](https://github.com/yaronelh) using GPT-5.4.
-> Great appreciation goes to the ranbuch and all contributors to the library.
-> 
-> For full list of changes. See the [changelog](https://github.com/yaronelh/accessibilitytool/blob/master/CHANGELOG.md). Changes include both modernization and security related updates. As identified by GPT-5.4.
->
+# accessibilitytool
+
+Modernized fork of the original [ranbuch/accessibility](https://github.com/ranbuch/accessibility).
+
+This fork keeps the same MIT license as the original project and was updated by [Yaron Elharar](https://github.com/yaronelh) using GPT-5.4.
+
+Great appreciation goes to Ran Buchnik and all contributors to the original library.
+
+For the full list of fork changes, see [CHANGELOG.md](./CHANGELOG.md).
 
 ![chrome_2026-03-23_21-17-29](https://github.com/user-attachments/assets/c233801c-e417-4bc2-9ead-8af4f1016a02)
 
-## ACCESSIBILITY TOOL (fork of ACCESSIBILITY)
+## Overview
 >Add **accessibility toolbar** to your website with one line of code!
 
 ![Alt text](https://raw.githubusercontent.com/ranbuch/accessibility/master/accessibility.png "accessibility icon")
 
 ### USAGE:
 
-`npm install accessibility`
+`npm install accessibilitytool`
 
 include script:
-`<script type="text/javascript" src="node_modules/accessibility/dist/main.js"></script>`
+`<script type="text/javascript" src="node_modules/accessibilitytool/dist/main.js"></script>`
 
 or import:
-`import { Accessibility } from 'accessibility';`
+`import { Accessibility } from 'accessibilitytool';`
 
 or CommonJS:
-`const { Accessibility } = require('accessibility');`
+`const { Accessibility } = require('accessibilitytool');`
 
 initialize component:
 `window.addEventListener('load', function() {
     new Accessibility();
 }, false);`
-
-### Full Documentation and [demo](https://ranbuch.github.io/accessibility/site/)
-
->We are proud to announce that [Joomla!](https://www.joomdev.com/blog/entry/enable-joomla-4-accessibility) are now using this repo as there built-in accessibility tool.
 
 ### DESCRIPTION:
 **Features:**
@@ -141,10 +139,15 @@ body {
 
 
 ### ICON IMAGE:
-You can change the default icon as described [here](https://ranbuch.github.io/accessibility/site/#icon-image)
+This fork ships with bundled local SVG defaults for the launcher, close button, reset button, and built-in menu actions.
+
+You can still replace the launcher and header icons through the `icon` options, for example by providing your own `imgElem`, `closeIconElem`, or `resetIconElem`.
 
 ### PERSISTENT SESSION:
-From version 3.0.1 the session will be persistent even after the user will refresh the page.
+Session persistence is enabled by default in the current fork.
+
+The modernized implementation stores state under a namespaced key and still restores legacy session data from older installs when available.
+
 To disable this feature use:
 ```javascript
 const options = {
@@ -198,7 +201,7 @@ You can add buttons that will open a model with custom iframes (for accessibilit
 ```javascript
 const options = {
     iframeModals: [{
-        iframeUrl: 'https://github.com/ranbuch/accessibility',
+        iframeUrl: 'https://example.com/accessibility-terms',
         buttonText: 'terms',
         icon: 'favorite',
         emoji: '❤️'
@@ -212,7 +215,7 @@ In case you will not provide the "icon" and the "emoji" we will use this setup:
 icon: 'policy',
 emoji: '⚖️'
 
-You can find icons [here](https://mui.com/material-ui/material-icons/)
+If you are using an icon font for custom button icons, choose names from the icon set you load yourself.
 
 ### ADD CUSTOM FUNCTIONS:
 You can add buttons that will invoke custom functions like so:
@@ -238,7 +241,7 @@ In case you will not provide the "icon" and the "emoji" we will use this setup:
 icon: 'psychology_alt',
 emoji: '❓'
 
-You can find icons [here](https://mui.com/material-ui/material-icons/)
+If you are using an icon font for custom button icons, choose names from the icon set you load yourself.
 
 You have to provide the "id" parameter. This would also be your way to identify the button in case you are using more then on function while using the same custom function.
 

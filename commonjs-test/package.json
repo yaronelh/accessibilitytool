@@ -9,7 +9,7 @@
 	},
 	"license": "MIT",
 	"dependencies": {
-		"accessibility": "file:./accessibility-1.0.1.tgz",
+		"accessibilitytool": "file:./accessibilitytool-1.0.1.tgz",
 		"vite": "8.0.2"
 	}
 }

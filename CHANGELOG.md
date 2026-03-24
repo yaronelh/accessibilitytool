@@ -84,16 +84,23 @@ First modernized fork release, built on top of upstream `6.1.0`.
 - Added a denser small-screen layout pass for very narrow screens, including tighter header/button sizing and more compact menu row spacing below `480px`.
 - Simplified the closed-menu behavior so it no longer depends on the earlier negative-position width hack.
 - Finalized fork release metadata under version `1.0.1` and aligned package, lockfile, and dry-run publish output to that release number.
-- Updated repository-facing documentation to use the actual repository name `accessibilitytool` while preserving the published package/import name `accessibility`.
+- Updated repository-facing documentation to use the actual repository and package name `accessibilitytool`.
 - Refreshed the README header to mark this as the modernized `accessibilitytool` release, preserve original-project attribution, note MIT license continuity, and credit the fork maintenance work.
 - Corrected usage and playground docs so they match the current build outputs and tarball names:
   - browser script path now references `dist/main.js`
   - README now includes the CommonJS import form
   - `commonjs-test` now points at `accessibility-1.0.1.tgz`
+- Renamed the published package identity from `accessibility` to `accessibilitytool` so the fork no longer carries a separate repository/package identity.
+- Updated install/import/playground references to use `accessibilitytool` consistently.
 - Cleaned up the playgrounds:
   - removed stale dead `#output` wiring from both playground entry files
   - aligned `commonjs-test` to `vite 8.0.2`
   - refreshed the `commonjs-test` install and lockfile against the `1.0.1` tarball
+- Corrected fork documentation that no longer matched the current implementation:
+  - removed stale upstream-only README references
+  - replaced outdated session-persistence wording
+  - replaced the outdated upstream icon-customization reference
+  - corrected the build-command and session-persistence descriptions in `CODE_OVERVIEW.md`
 
 ### Security
 
