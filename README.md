@@ -11,29 +11,29 @@ For the full list of fork changes, see [CHANGELOG.md](./CHANGELOG.md).
 ![chrome_2026-03-23_21-17-29](https://github.com/user-attachments/assets/c233801c-e417-4bc2-9ead-8af4f1016a02)
 
 ## Overview
->Add **accessibility toolbar** to your website with one line of code!
+Add an **accessibility toolbar** to your website with a single line of code.
 
 ![Alt text](https://raw.githubusercontent.com/ranbuch/accessibility/master/accessibility.png "accessibility icon")
 
-### USAGE:
+### USAGE
 
 `npm install @yaronelh/accessibilitytool`
 
-include script:
+Include script:
 `<script type="text/javascript" src="node_modules/@yaronelh/accessibilitytool/dist/main.js"></script>`
 
-or import:
+Or import:
 `import { Accessibility } from '@yaronelh/accessibilitytool';`
 
-or CommonJS:
+Or CommonJS:
 `const { Accessibility } = require('@yaronelh/accessibilitytool');`
 
-initialize component:
+Initialize component:
 `window.addEventListener('load', function() {
     new Accessibility();
 }, false);`
 
-### DESCRIPTION:
+### DESCRIPTION
 **Features:**
 - [x]  increase text size
 - [x]  decrease text size
@@ -48,14 +48,14 @@ initialize component:
 - [x]  speech to text
 - [x]  suppress animations
 
->Does not depend any other directory (**jQuery is not required**).
-Easy to use!
+>Does not depend on any other library (**jQuery is not required**).
+Easy to use.
 
-### LIMITATIONS & KNOWN ISSUES:
+### LIMITATIONS & KNOWN ISSUES
 * Works with html5 browsers only (no IE8 and below)
 * Text to speech & speech to text works in supported browsers and languages only
 
-### MULTI LANGUAGE EXAMPLE:
+### MULTI LANGUAGE EXAMPLE
 
 ```javascript
 var labels = {
@@ -87,7 +87,7 @@ options.speechToTextLang = 'en-US'; // or any other language
 new Accessibility(options);
 ```
 
-### DISABLE FEATURES EXAMPLE:
+### DISABLE FEATURES EXAMPLE
 ```javascript
 options.modules = {
     decreaseText: [true/false],
@@ -109,8 +109,8 @@ options.modules = {
 
 >When the default is **true**
 
-### TEXT SIZE MANIPULATION APPROACHES:
-If text increase / decrease isn't working for your size your probably not using responsive font size units (such as em, rem etc.).  
+### TEXT SIZE MANIPULATION APPROACHES
+If text increase / decrease isn't working for your site, you are probably not using responsive font-size units such as `em` or `rem`.  
 In that case you can initialize the accessibility tool like this:  
 ```javascript
 new Accessibility({textPixelMode: true})
@@ -120,14 +120,14 @@ You can change the factor of the font size difference between every iteration (d
 new Accessibility({textSizeFactor: 4})
 ```
 
-### ANIMATIONS:
+### ANIMATIONS
 Cancel all buttons animations:  
 ```javascript
 new Accessibility({animations: {buttons: false}})
 ```
 
-### POSITIONING:
-You can position the accessibility icon in any place on the screen. The default position is bottom right:
+### POSITIONING
+You can position the accessibility icon anywhere on the screen. The default position is bottom right:
 ```css
 body {
     --_access-icon-top: 50px;
@@ -138,12 +138,12 @@ body {
 ```
 
 
-### ICON IMAGE:
+### ICON IMAGE
 This fork ships with bundled local SVG defaults for the launcher, close button, reset button, and built-in menu actions.
 
 You can still replace the launcher and header icons through the `icon` options, for example by providing your own `imgElem`, `closeIconElem`, or `resetIconElem`.
 
-### PERSISTENT SESSION:
+### PERSISTENT SESSION
 Session persistence is enabled by default in the current fork.
 
 The modernized implementation stores state under a namespaced key and still restores legacy session data from older installs when available.
@@ -159,7 +159,7 @@ new Accessibility(options);
 ```
 
 
-### DIRECT ACCESS TO THE API:
+### DIRECT ACCESS TO THE API
 You can toggle the menu buttons directly via the exposed API:
 ```javascript
 var instance = new Accessibility();
@@ -196,8 +196,8 @@ instance.menuInterface.increaseText = function() {
 }
 ```
 
-### ADD CUSTOM IFRAME:
-You can add buttons that will open a model with custom iframes (for accessibility terms for example) like so:
+### ADD CUSTOM IFRAME
+You can add buttons that open a modal with custom iframes, for example for accessibility terms:
 ```javascript
 const options = {
     iframeModals: [{
@@ -210,14 +210,14 @@ const options = {
 new Accessibility(options);
 ```
 
-In case you will not provide the "icon" and the "emoji" we will use this setup:
+If you do not provide the `icon` and `emoji`, this setup is used:
 
 icon: 'policy',
 emoji: '⚖️'
 
 If you are using an icon font for custom button icons, choose names from the icon set you load yourself.
 
-### ADD CUSTOM FUNCTIONS:
+### ADD CUSTOM FUNCTIONS
 You can add buttons that will invoke custom functions like so:
 ```javascript
 const options = {
@@ -236,25 +236,25 @@ const options = {
 new Accessibility(options);
 ```
 
-In case you will not provide the "icon" and the "emoji" we will use this setup:
+If you do not provide the `icon` and `emoji`, this setup is used:
 
 icon: 'psychology_alt',
 emoji: '❓'
 
 If you are using an icon font for custom button icons, choose names from the icon set you load yourself.
 
-You have to provide the "id" parameter. This would also be your way to identify the button in case you are using more then on function while using the same custom function.
+You must provide the `id` parameter. This is how you identify the button if you are using more than one custom function.
 
-You have to provide the "toggle" parameter. This will determine whether the button will toggle his state active state (on and off) or not.
-
-
+You must provide the `toggle` parameter. This determines whether the button toggles an active state on and off.
 
 
 
 
 
-### CUSTOMIZE STYLING:
-You can use CSS variables to change the styling of the menu. Here is an example of how you can change the exposed variables in order to change the theme to dark mode:
+
+
+### CUSTOMIZE STYLING
+You can use CSS variables to change the styling of the menu. Here is an example of changing the exposed variables to a dark theme:
 ```css
 :root {
     --_access-menu-background-color: #000;
@@ -284,7 +284,7 @@ const instance = new Accessibility({suppressDomInjection: true});
 ```
 You will need to provide your own DOM and call `menuInterface` functions.
 
-By default the library does not fetch remote icon fonts. The default runtime uses emoji/local icon behavior so it works without reaching out to Google Fonts.
+By default the library does not fetch remote icon fonts. The default runtime uses bundled local icons, so it works without reaching out to Google Fonts.
 
 If you already load an icon font yourself from a local or self-hosted stylesheet, you can point the component at that font without enabling remote loading:
 ```javascript
@@ -355,7 +355,7 @@ If your site uses a strict CSP, keep remote font loading disabled and self-host 
 ```
 Obviously you will need to add the missing variables for the rest of the fonts.
 
-### CHANGE MODULES ORDER:
+### CHANGE MODULES ORDER
 You can determine the order of the modules:
 ```javascript
 new Accessibility({
@@ -369,5 +369,5 @@ new Accessibility({
 ```
 
 
-### LICENSE:
+### LICENSE
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://spdx.org/licenses/MIT)

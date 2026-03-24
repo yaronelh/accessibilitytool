@@ -1,7 +1,7 @@
 {
 	"name": "@yaronelh/accessibilitytool",
 	"version": "1.0.1",
-	"description": "add accessibility to your website",
+	"description": "Accessibility toolbar for websites with text, color, cursor, and reading assistance controls",
 	"homepage": "https://github.com/yaronelh/accessibilitytool",
 	"repository": {
 		"type": "git",
@@ -44,18 +44,21 @@
 	},
 	"keywords": [
 		"accessibility",
+		"a11y",
+		"toolbar",
 		"website",
-		"increase text size",
+		"web",
+		"text size",
+		"text spacing",
+		"line height",
 		"underline links",
-		"text to speech",
-		"invert colors",
-		"gray hues",
-		"underline links",
-		"big cursor",
-		"reading guide",
 		"text to speech",
 		"speech to text",
-		"suppress animations"
+		"invert colors",
+		"gray hues",
+		"big cursor",
+		"reading guide",
+		"disable animations"
 	],
 	"author": "Ran Buchnik <ranbuch@gmail.com>",
 	"license": "MIT",

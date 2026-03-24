@@ -101,6 +101,11 @@ First modernized fork release, built on top of upstream `6.1.0`.
   - replaced outdated session-persistence wording
   - replaced the outdated upstream icon-customization reference
   - corrected the build-command and session-persistence descriptions in `CODE_OVERVIEW.md`
+- Cleaned up npm-facing metadata and README wording before publication:
+  - improved the package description
+  - removed duplicate/weak keywords and replaced them with a tighter keyword set
+  - tightened install/usage headings and grammar in the README
+  - clarified that the default icon runtime uses bundled local icons
 
 ### Security
 
