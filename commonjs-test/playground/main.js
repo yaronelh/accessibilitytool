@@ -1,4 +1,4 @@
-import { Accessibility } from 'accessibilitytool';
+import { Accessibility } from '@yaronelh/accessibilitytool';
 
 window.addEventListener('DOMContentLoaded', () => {
 	const acc = new Accessibility();

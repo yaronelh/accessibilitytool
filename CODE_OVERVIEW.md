@@ -18,7 +18,7 @@ The main public API is the `Accessibility` class exported from [src/main.ts](/ho
 When a consumer runs:
 
 ```ts
-import { Accessibility } from 'accessibilitytool';
+import { Accessibility } from '@yaronelh/accessibilitytool';
 
 new Accessibility();
 ```

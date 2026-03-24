@@ -90,8 +90,8 @@ First modernized fork release, built on top of upstream `6.1.0`.
   - browser script path now references `dist/main.js`
   - README now includes the CommonJS import form
   - `commonjs-test` now points at `accessibility-1.0.1.tgz`
-- Renamed the published package identity from `accessibility` to `accessibilitytool` so the fork no longer carries a separate repository/package identity.
-- Updated install/import/playground references to use `accessibilitytool` consistently.
+- Renamed the published package identity from `accessibility` to the scoped package `@yaronelh/accessibilitytool` so the fork no longer carries a separate repository/package identity.
+- Updated install/import/playground references to use `@yaronelh/accessibilitytool` consistently.
 - Cleaned up the playgrounds:
   - removed stale dead `#output` wiring from both playground entry files
   - aligned `commonjs-test` to `vite 8.0.2`

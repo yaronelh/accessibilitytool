@@ -17,16 +17,16 @@ For the full list of fork changes, see [CHANGELOG.md](./CHANGELOG.md).
 
 ### USAGE:
 
-`npm install accessibilitytool`
+`npm install @yaronelh/accessibilitytool`
 
 include script:
-`<script type="text/javascript" src="node_modules/accessibilitytool/dist/main.js"></script>`
+`<script type="text/javascript" src="node_modules/@yaronelh/accessibilitytool/dist/main.js"></script>`
 
 or import:
-`import { Accessibility } from 'accessibilitytool';`
+`import { Accessibility } from '@yaronelh/accessibilitytool';`
 
 or CommonJS:
-`const { Accessibility } = require('accessibilitytool');`
+`const { Accessibility } = require('@yaronelh/accessibilitytool');`
 
 initialize component:
 `window.addEventListener('load', function() {
